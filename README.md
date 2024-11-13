@@ -1,1 +1,1 @@
-# ST_GIX_elevator_cleanliness_detection
+# Sound Transit Elevator Cleanness Detection
