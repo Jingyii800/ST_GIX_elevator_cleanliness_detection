@@ -1,11 +1,16 @@
-B. Data Analysis and Summary Pipeline
+
 
 Trigger: Timer Trigger (e.g., daily or hourly).
 Functions:
+
+Handle Alert:
+Confirm the truth of alert, handle it and send email to cleanning crew
+
 Data Aggregation Function:
 Queries historical data from the database.
 Generates summaries (e.g., total alerts, response times).
 Stores aggregated results in a separate table/collection for fast dashboard access.
+
 Dashboard Data Function:
 HTTP-triggered function that responds to dashboard queries.
 Serves preprocessed analytics data (e.g., JSON for charts and tables).

@@ -7,10 +7,11 @@
 import json
 import logging
 import azure.functions as func
-
+import os
+import pyodbc
 
 blueprint = func.Blueprint()
-
+conn_str = os.getenv('SqlConnectionString')
 
 @blueprint.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="myeventhub",
                                connection="EventHubConnectionString") 
@@ -21,6 +22,15 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
     # Decode the message and convert from JSON
     message_body = azeventhub.get_body().decode('utf-8')
     data = json.loads(message_body)
+
+    # Connect to the database
+    # conn = pyodbc.connect(conn_str)
+    # cursor = conn.cursor()
+
+    # query = "SELECT logID, station, FORMAT(timeStamp, 'yyyy-MM-dd HH:mm:ss') AS created_at FROM Elevator_Cleanliness_Logs;"
+    # cursor.execute(query)
+    # rows = cursor.fetchall()
+    # conn.close()
 
     # sensor:
         # humidity sensor
@@ -38,7 +48,8 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
     # else:
         # if detect abnormal >= 3
             # write in SQL database
-            # Primary Key(autoincremented) | Time | Location | Issue | Resolved | Staff| Resolve Time | Duration
+            # Primary Key(autoincremented) | Time | Location | Comfirmed | FalseAlert | Issue | Resolved | Resolved_Staff| Resolve Time | Duration | Humidity | Infrared | Air Quality | Passenger_Reported
+            #     int                        str      str       boolean     boolean     str     boolean      str             str           int       float        float    float             boolean
             # trigger alert (WebSocket)
 
 
