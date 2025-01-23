@@ -4,6 +4,7 @@
 # 
 # Please refer to https://aka.ms/azure-functions-python-blueprints
 
+import json
 import logging
 import azure.functions as func
 
@@ -16,3 +17,29 @@ blueprint = func.Blueprint()
 def eventhub_trigger(azeventhub: func.EventHubEvent):
     logging.info('Python EventHub trigger processed an event: %s',
                 azeventhub.get_body().decode('utf-8'))
+    
+    # Decode the message and convert from JSON
+    message_body = azeventhub.get_body().decode('utf-8')
+    data = json.loads(message_body)
+
+    # sensor:
+        # humidity sensor
+        # infrared sensor
+        # air quality sensor
+        # button
+    # nfc
+    # time
+    # location
+
+    # if "sensor" not in data:
+        # process nfc
+        # update in SQL Logs database: marked as True, staff: John, Resolved Time:xxx, Duration, count
+
+    # else:
+        # if detect abnormal >= 3
+            # write in SQL database
+            # Primary Key(autoincremented) | Time | Location | Issue | Resolved | Staff| Resolve Time | Duration
+            # trigger alert (WebSocket)
+
+
+

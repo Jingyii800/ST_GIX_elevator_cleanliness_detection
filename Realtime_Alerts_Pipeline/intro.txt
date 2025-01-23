@@ -1,10 +1,12 @@
 A. Real-Time Alerts Pipeline
 
-Trigger: Event Hub Trigger (if IoT Hub is used) or HTTP Trigger (direct from Raspberry Pi).
+Trigger: Event Hub Trigger (if IoT Hub is used).
+
 Functions:
 Data Ingestion Function:
 Stores incoming sensor data in a database (e.g., Cosmos DB).
 Simple preprocessing for immediate issues (e.g., threshold checks for odor levels).
+
 Alert Processing Function:
 Analyzes the sensor data.
 Detects issues (e.g., strong odors, high humidity).

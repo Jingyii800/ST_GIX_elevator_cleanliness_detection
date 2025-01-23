@@ -57,7 +57,7 @@ cs = digitalio.DigitalInOut(CE0)
 mcp = MCP3008(spi, cs)
 
 # Create an analog input channel for the MQ2 sensor
-mq2_channel = AnalogIn(mcp, MCP3008.P0)  # Use channel 0 (CH0)
+mq2_channel = AnalogIn(mcp, 0)  # Use channel 0 (CH0)
 
 # Baseline calibration (update these values based on calibration)
 CLEAN_AIR_VOLTAGE = 0.2  # Voltage in clean air (update after calibration)
