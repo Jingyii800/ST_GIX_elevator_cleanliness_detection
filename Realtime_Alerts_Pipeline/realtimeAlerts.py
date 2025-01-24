@@ -46,9 +46,13 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
         # update in SQL Logs database: marked as True, staff: John, Resolved Time:xxx, Duration, count
 
     # else:
+        # check abnormal_counts based on Machine Learning from database
+        # write in database
+        # Primary Key(auto) | Time | station| elevator_num | humidity | infrared | airQuality | passengerButton
+        #                              str       int           float      float       float        boolean
         # if detect abnormal >= 3
             # write in SQL database
-            # Primary Key(autoincremented) | Time | Location | Comfirmed | FalseAlert | Issue | Resolved | Resolved_Staff| Resolve Time | Duration | Humidity | Infrared | Air Quality | Passenger_Reported
+            # Primary Key(autoincremented) | Reported_Time | station | Comfirmed | FalseAlert | Issue | Resolved | Resolved_Staff| Resolve Time | Duration | Humidity | Infrared | Air Quality | Passenger_Reported
             #     int                        str      str       boolean     boolean     str     boolean      str             str           int       float        float    float             boolean
             # trigger alert (WebSocket)
 

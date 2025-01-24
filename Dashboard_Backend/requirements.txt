@@ -3,3 +3,4 @@ flask-cors
 pyodbc 
 gunicorn 
 python-dotenv
+requests
