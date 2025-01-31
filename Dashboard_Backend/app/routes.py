@@ -28,6 +28,7 @@ def get_alerts():
                 'elevatorNumber': row.elevatorNumber,
             })
 
+        print(alert_list)
         return jsonify(alert_list)
     else:
         return jsonify({"error": "Database connection failed"}), 500
@@ -63,6 +64,7 @@ def get_alerts_by_id(alert_id):
         }
 
         conn.close()
+        print(alert_detail)
         return jsonify(alert_detail)
     
 #Update Alert issue
@@ -88,6 +90,7 @@ def update_alerts(alert_id):
         conn.close()
 
         return jsonify({"message": f"Alert {alert_id} issue updated to {new_issue}."}), 200
+        print("success")
     else:
         return jsonify({"error": "Database connection failed"}), 500
     
@@ -136,7 +139,9 @@ def get_report_logs():
     # Get query parameters
     time_filter = request.args.get('time_filter', 'daily')  # daily, weekly, monthly, yearly
     station = request.args.get('station', None)
-    elevator_num = int(request.args.get('elevator_num', None))
+    elevator_num_str = request.args.get('elevator_num', None)
+    elevator_num = int(elevator_num_str) if elevator_num_str else None
+    print(time_filter, station, elevator_num)
 
     # Date filter logic
     now = datetime.now()
@@ -172,6 +177,7 @@ def get_report_logs():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        print(query, params)
         cursor.execute(query, params)
         logs = cursor.fetchall()
         conn.close()
@@ -188,8 +194,9 @@ def get_report_logs():
             }
             for row in logs
         ]
-
+        print(results)
         return jsonify(results), 200
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -198,7 +205,7 @@ def get_report_logs():
 @bp.route('/elevator_status', methods=['GET'])
 def get_elevator_status():
     """
-    Retrieve the latest sensor data for elevators, 
+    Retrieve the latest sensor data and status for elevators, 
     optionally filtered by station and elevator number.
     """
     station = request.args.get('station', default=None, type=str)
@@ -207,9 +214,20 @@ def get_elevator_status():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Base SQL query to get the latest data for each elevator
+    # Updated SQL query to retrieve both sensor values and their corresponding status
     query = """
-        SELECT Station, Elevator_Num, Humidity, Infrared, AirQuality, PassengerButton, Time
+        SELECT 
+            ESS.Station, 
+            ESS.Elevator_Num, 
+            ESS.Humidity, 
+            ESS.Humidity_Status,
+            ESS.Infrared, 
+            ESS.Infrared_Status,
+            ESS.AirQuality, 
+            ESS.AirQuality_Status,
+            ESS.PassengerButton,
+            ESS.PassengerButton_Status,
+            ESS.Time
         FROM Elevator_Sensor_Status AS ESS
         WHERE Time = (
             SELECT MAX(Time)
@@ -223,11 +241,11 @@ def get_elevator_status():
     params = []
 
     if station:
-        conditions.append("Station = ?")
+        conditions.append("ESS.Station = ?")
         params.append(station)
 
     if elevator_num is not None:
-        conditions.append("Elevator_Num = ?")
+        conditions.append("ESS.Elevator_Num = ?")
         params.append(elevator_num)
 
     # If filters exist, append them to the query
@@ -246,9 +264,15 @@ def get_elevator_status():
             "station": row.Station,
             "elevator_num": row.Elevator_Num,
             "humidity": row.Humidity,
+            "humidity_status": row.Humidity_Status,
             "infrared": row.Infrared,
+            "infrared_status": row.Infrared_Status,
             "air_quality": row.AirQuality,
+            "air_quality_status": row.AirQuality_Status,
             "passenger_button": bool(row.PassengerButton),
+            "passenger_button_status": row.PassengerButton_Status,
+            "time": row.Time
         })
+    print(sensor_data)
 
     return jsonify(sensor_data), 200

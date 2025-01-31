@@ -1,0 +1,1247 @@
+.large-input {
+  width: 220px;
+}
+
+.large-input .overlap {
+  position: absolute;
+}
+
+.large-input .div-2 {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: var(--body-text-extra-small-body-extra-small-regular-font-family);
+  font-size: var(--body-text-extra-small-body-extra-small-regular-font-size);
+  font-style: var(--body-text-extra-small-body-extra-small-regular-font-style);
+  font-weight: var(--body-text-extra-small-body-extra-small-regular-font-weight);
+  left: 0;
+  letter-spacing: var(
+    --body-text-extra-small-body-extra-small-regular-letter-spacing
+  );
+  line-height: var(--body-text-extra-small-body-extra-small-regular-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input .background {
+  border: 1px solid;
+  border-radius: 10px;
+  height: 46px;
+  left: 0;
+  position: absolute;
+  top: 5px;
+  width: 220px;
+}
+
+.large-input .close-icon {
+  height: 8px;
+  left: 192px;
+  position: absolute;
+  top: 24px;
+  width: 8px;
+}
+
+.large-input .search-wrapper {
+  height: 20px;
+  position: absolute;
+}
+
+.large-input .search {
+  font-family: var(--body-text-extra-small-body-extra-small-regular-font-family);
+  font-size: var(--body-text-extra-small-body-extra-small-regular-font-size);
+  font-style: var(--body-text-extra-small-body-extra-small-regular-font-style);
+  font-weight: var(--body-text-extra-small-body-extra-small-regular-font-weight);
+  left: 0;
+  letter-spacing: var(
+    --body-text-extra-small-body-extra-small-regular-letter-spacing
+  );
+  line-height: var(--body-text-extra-small-body-extra-small-regular-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input .username-icon {
+  height: 12px;
+  left: 20px;
+  position: absolute;
+  top: 22px;
+  width: 12px;
+}
+
+.large-input .overlap-group-wrapper {
+  position: absolute;
+}
+
+.large-input .ellipse {
+  border: 1.4px solid;
+  border-color: var(--secondarydark-grey900);
+  border-radius: 5px;
+  height: 10px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 10px;
+}
+
+.large-input .img {
+  height: 3px;
+  left: 7px;
+  position: absolute;
+  top: 8px;
+  width: 3px;
+}
+
+.large-input .overlap-group {
+  position: relative;
+}
+
+.large-input .background-2 {
+  left: 0;
+  position: absolute;
+  width: 220px;
+}
+
+.large-input .overlap-group-2 {
+  height: 55px;
+  position: relative;
+}
+
+.large-input .background-3 {
+  background-color: var(--secondarygrey-300);
+  border-radius: 10px;
+  height: 46px;
+  left: 0;
+  position: absolute;
+  top: 9px;
+  width: 220px;
+}
+
+.large-input .rectangle {
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: var(--secondarygrey-300);
+  border-radius: 60px;
+  height: 18px;
+  left: 12px;
+  position: absolute;
+  top: 0;
+}
+
+.large-input .close-icon-2 {
+  height: 8px;
+  left: 192px;
+  position: absolute;
+  width: 8px;
+}
+
+.large-input .simmmple-wrapper {
+  height: 20px;
+  position: absolute;
+}
+
+.large-input .simmmple {
+  color: var(--secondarydark-grey900);
+  font-family: var(--body-text-extra-small-body-extra-small-regular-font-family);
+  font-size: var(--body-text-extra-small-body-extra-small-regular-font-size);
+  font-style: var(--body-text-extra-small-body-extra-small-regular-font-style);
+  font-weight: var(--body-text-extra-small-body-extra-small-regular-font-weight);
+  left: 0;
+  letter-spacing: var(
+    --body-text-extra-small-body-extra-small-regular-letter-spacing
+  );
+  line-height: var(--body-text-extra-small-body-extra-small-regular-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input .overlap-wrapper {
+  position: absolute;
+}
+
+.large-input .placeholder-text {
+  height: 10px;
+  left: 19px;
+  position: absolute;
+  width: 33px;
+}
+
+.large-input .text-wrapper-5 {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.large-input .background-4 {
+  background-color: var(--secondarygrey-300);
+  border-radius: 10px;
+  height: 46px;
+  left: 0;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  width: 220px;
+}
+
+.large-input .michael-harmen-wrapper {
+  height: 20px;
+  opacity: 0.5;
+  position: absolute;
+  top: 13px;
+}
+
+.large-input .search-icon-2 {
+  height: 11px;
+  left: 20px;
+  opacity: 0.5;
+  position: absolute;
+  top: 17px;
+  width: 11px;
+}
+
+.large-input .overlap-group-3 {
+  height: 12px;
+  position: relative;
+}
+
+.large-input .close-icon-3 {
+  height: 8px;
+  left: 191px;
+  position: absolute;
+  top: 18px;
+  width: 8px;
+}
+
+.large-input .text-2 {
+  height: 20px;
+  left: 41px;
+  position: absolute;
+  top: 12px;
+  width: 39px;
+}
+
+.large-input .search-icon-3 {
+  height: 11px;
+  left: 19px;
+  position: absolute;
+  top: 16px;
+  width: 11px;
+}
+
+.large-input .text-3 {
+  position: absolute;
+}
+
+.large-input.active {
+  background-color: var(--secondarygrey-300);
+  border: 1px solid;
+  border-color: var(--secondarydark-grey500-placeholder-color);
+  border-radius: 10px;
+  height: 46px;
+  position: relative;
+}
+
+.large-input.disabled {
+  height: 46px;
+}
+
+.large-input.default {
+  background-color: var(--secondarygrey-300);
+  border-radius: 10px;
+  height: 46px;
+}
+
+.large-input.typing {
+  height: 51px;
+}
+
+.large-input.filled {
+  height: 55px;
+}
+
+.large-input.success {
+  position: relative;
+}
+
+.large-input.caption {
+  height: 68px;
+  position: relative;
+}
+
+.large-input.error {
+  position: relative;
+}
+
+.large-input.success.search-icon {
+  height: 71px;
+}
+
+.large-input.standard.success {
+  height: 73px;
+}
+
+.large-input.default.search-icon {
+  position: relative;
+}
+
+.large-input.standard.error {
+  height: 73px;
+}
+
+.large-input.error.search-icon {
+  height: 71px;
+}
+
+.large-input.active .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.disabled .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.default .overlap {
+  height: 20px;
+  left: 42px;
+  top: 13px;
+  width: 39px;
+}
+
+.large-input.typing .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.filled .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.success .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.caption .overlap {
+  background-color: var(--secondarygrey-300);
+  border-radius: 10px;
+  height: 46px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.error .overlap {
+  height: 51px;
+  left: 0;
+  top: 0;
+  width: 220px;
+}
+
+.large-input.standard .text-7 {
+  height: 20px;
+  width: 89px;
+}
+
+.large-input.active .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.disabled .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.default .text-7 {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: var(--body-text-extra-small-body-extra-small-regular-font-family);
+  font-size: var(--body-text-extra-small-body-extra-small-regular-font-size);
+  font-style: var(--body-text-extra-small-body-extra-small-regular-font-style);
+  font-weight: var(--body-text-extra-small-body-extra-small-regular-font-weight);
+  left: 0;
+  letter-spacing: var(
+    --body-text-extra-small-body-extra-small-regular-letter-spacing
+  );
+  line-height: var(--body-text-extra-small-body-extra-small-regular-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input.typing .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.filled .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.success .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.caption .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.error .text-7 {
+  left: 19px;
+  position: relative;
+  top: 13px;
+}
+
+.large-input.active .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.disabled .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.default .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.typing .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.filled .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.success .background {
+  border-color: var(--primarygreen500-success-color);
+}
+
+.large-input.caption .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.error .background {
+  border-color: var(--primaryred500-error-color);
+}
+
+.large-input.standard .search-wrapper {
+  left: 19px;
+}
+
+.large-input.active .search-wrapper {
+  top: 18px;
+}
+
+.large-input.search-icon .search-wrapper {
+  left: 42px;
+}
+
+.large-input.disabled .search-wrapper {
+  top: 18px;
+}
+
+.large-input.default .search-wrapper {
+  top: 18px;
+}
+
+.large-input.typing .search-wrapper {
+  top: 18px;
+}
+
+.large-input.filled .search-wrapper {
+  top: 18px;
+}
+
+.large-input.success .search-wrapper {
+  top: 18px;
+}
+
+.large-input.caption .search-wrapper {
+  top: 13px;
+  width: 39px;
+}
+
+.large-input.error .search-wrapper {
+  top: 18px;
+}
+
+.large-input.success.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.standard.success .search-wrapper {
+  width: 89px;
+}
+
+.large-input.standard.filled .search-wrapper {
+  width: 89px;
+}
+
+.large-input.standard.default .search-wrapper {
+  width: 89px;
+}
+
+.large-input.default.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.filled.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.standard.error .search-wrapper {
+  width: 89px;
+}
+
+.large-input.disabled.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.error.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.standard.active .search-wrapper {
+  width: 89px;
+}
+
+.large-input.typing.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.active.search-icon .search-wrapper {
+  width: 87px;
+}
+
+.large-input.standard.typing .search-wrapper {
+  width: 89px;
+}
+
+.large-input.standard.disabled .search-wrapper {
+  width: 89px;
+}
+
+.large-input.active .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.disabled .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.default .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.typing .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.filled .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.success .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.caption .search {
+  color: var(--secondarydark-grey500-placeholder-color);
+}
+
+.large-input.error .search {
+  color: var(--secondarydark-grey900);
+}
+
+.large-input.active .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.disabled .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.default .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.typing .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.filled .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.success .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.caption .overlap-group-wrapper {
+  height: 11px;
+  left: 20px;
+  top: 17px;
+  width: 11px;
+}
+
+.large-input.error .overlap-group-wrapper {
+  height: 10px;
+  left: 19px;
+  top: 0;
+}
+
+.large-input.success.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.standard.success .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.standard.filled .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.standard.default .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.default.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.filled.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.standard.error .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.disabled.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.error.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.standard.active .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.typing.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.active.search-icon .overlap-group-wrapper {
+  width: 48px;
+}
+
+.large-input.standard.typing .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.standard.disabled .overlap-group-wrapper {
+  width: 65px;
+}
+
+.large-input.active .overlap-group-22 {
+  position: absolute;
+}
+
+.large-input.disabled .overlap-group-22 {
+  position: absolute;
+}
+
+.large-input.default .overlap-group-22 {
+  position: absolute;
+}
+
+.large-input.typing .overlap-group-22 {
+  position: absolute;
+}
+
+.large-input.filled .overlap-group-22 {
+  position: absolute;
+}
+
+.large-input.success .overlap-group-22 {
+  -webkit-text-stroke: 3px #ffffff;
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  left: -3px;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  top: -3px;
+  white-space: nowrap;
+}
+
+.large-input.caption .overlap-group-22 {
+  height: 12px;
+  position: relative;
+}
+
+.large-input.error .overlap-group-22 {
+  -webkit-text-stroke: 3px #ffffff;
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  left: -3px;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  top: -3px;
+  white-space: nowrap;
+}
+
+.large-input.active .overlap-group {
+  height: 55px;
+}
+
+.large-input.disabled .overlap-group {
+  border-radius: 10px;
+  height: 46px;
+}
+
+.large-input.default .overlap-group {
+  height: 20px;
+  left: 19px;
+  top: 13px;
+  width: 89px;
+}
+
+.large-input.typing .overlap-group {
+  height: 51px;
+}
+
+.large-input.filled .overlap-group {
+  height: 55px;
+}
+
+.large-input.success .overlap-group {
+  height: 55px;
+}
+
+.large-input.caption .overlap-group {
+  height: 55px;
+}
+
+.large-input.error .overlap-group {
+  height: 55px;
+}
+
+.large-input.active .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.disabled .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.default .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.typing .background-2 {
+  border: 1px solid;
+  border-color: var(--secondarydark-grey500-placeholder-color);
+  border-radius: 10px;
+  height: 46px;
+  top: 5px;
+}
+
+.large-input.filled .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.success .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.caption .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.error .background-2 {
+  height: 55px;
+  top: 0;
+}
+
+.large-input.standard .rectangle {
+  width: 77px;
+}
+
+.large-input.search-icon .rectangle {
+  width: 44px;
+}
+
+.large-input.active .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.disabled .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.default .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.typing .close-icon-2 {
+  top: 24px;
+}
+
+.large-input.filled .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.success .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.caption .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.error .close-icon-2 {
+  top: 28px;
+}
+
+.large-input.standard .simmmple-wrapper {
+  left: 19px;
+}
+
+.large-input.active .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.search-icon .simmmple-wrapper {
+  left: 42px;
+}
+
+.large-input.disabled .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.default .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.typing .simmmple-wrapper {
+  top: 18px;
+}
+
+.large-input.filled .simmmple-wrapper {
+  top: 22px;
+}
+
+.large-input.success .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.caption .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.error .simmmple-wrapper {
+  top: 22px;
+  width: 60px;
+}
+
+.large-input.standard.filled .simmmple-wrapper {
+  width: 89px;
+}
+
+.large-input.filled.search-icon .simmmple-wrapper {
+  width: 60px;
+}
+
+.large-input.typing.search-icon .simmmple-wrapper {
+  width: 53px;
+}
+
+.large-input.standard.typing .simmmple-wrapper {
+  width: 78px;
+}
+
+.large-input.standard .overlap-wrapper {
+  height: 10px;
+  left: 19px;
+  width: 65px;
+}
+
+.large-input.active .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.search-icon .overlap-wrapper {
+  height: 11px;
+  left: 20px;
+  width: 11px;
+}
+
+.large-input.disabled .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.default .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.success .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.caption .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.error .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.standard.filled .overlap-wrapper {
+  top: 4px;
+}
+
+.large-input.filled.search-icon .overlap-wrapper {
+  top: 26px;
+}
+
+.large-input.typing.search-icon .overlap-wrapper {
+  top: 22px;
+}
+
+.large-input.standard.typing .overlap-wrapper {
+  top: 0;
+}
+
+.large-input.standard .overlap-61 {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.large-input.search-icon .overlap-61 {
+  height: 12px;
+  position: relative;
+}
+
+.large-input.standard.filled .overlap-61 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.standard.typing .overlap-61 {
+  -webkit-text-stroke: 3px #ffffff;
+  left: -3px;
+  top: -3px;
+}
+
+.large-input.active .placeholder-text {
+  top: 4px;
+}
+
+.large-input.disabled .placeholder-text {
+  top: 4px;
+}
+
+.large-input.default .placeholder-text {
+  top: 4px;
+}
+
+.large-input.typing .placeholder-text {
+  top: 0;
+}
+
+.large-input.filled .placeholder-text {
+  top: 4px;
+}
+
+.large-input.success .placeholder-text {
+  top: 4px;
+}
+
+.large-input.caption .placeholder-text {
+  top: 4px;
+}
+
+.large-input.error .placeholder-text {
+  top: 4px;
+}
+
+.large-input.active .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.disabled .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.default .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.typing .text-wrapper-5 {
+  -webkit-text-stroke: 3px #ffffff;
+  left: -3px;
+  top: -3px;
+}
+
+.large-input.filled .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.success .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.caption .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.error .text-wrapper-5 {
+  left: 0;
+  top: 0;
+}
+
+.large-input.standard .michael-harmen-wrapper {
+  left: 19px;
+  width: 89px;
+}
+
+.large-input.search-icon .michael-harmen-wrapper {
+  left: 42px;
+  width: 39px;
+}
+
+.large-input.active .text-3 {
+  height: 20px;
+  left: 18px;
+  top: 12px;
+  width: 89px;
+}
+
+.large-input.disabled .text-3 {
+  height: 10px;
+  left: 0;
+  top: 63px;
+  width: 163px;
+}
+
+.large-input.default .text-3 {
+  height: 11px;
+  left: 20px;
+  top: 17px;
+  width: 11px;
+}
+
+.large-input.typing .text-3 {
+  height: 10px;
+  left: 0;
+  top: 63px;
+  width: 163px;
+}
+
+.large-input.filled .text-3 {
+  height: 10px;
+  left: 0;
+  top: 63px;
+  width: 163px;
+}
+
+.large-input.success .text-3 {
+  height: 10px;
+  left: 0;
+  top: 63px;
+}
+
+.large-input.caption .text-3 {
+  height: 10px;
+  left: 0;
+  top: 58px;
+  width: 146px;
+}
+
+.large-input.error .text-3 {
+  height: 10px;
+  left: 0;
+  top: 63px;
+}
+
+.large-input.success.search-icon .text-3 {
+  width: 132px;
+}
+
+.large-input.standard.success .text-3 {
+  width: 123px;
+}
+
+.large-input.standard.error .text-3 {
+  width: 128px;
+}
+
+.large-input.error.search-icon .text-3 {
+  width: 163px;
+}
+
+.large-input.active .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: var(--body-text-extra-small-body-extra-small-regular-font-family);
+  font-size: var(--body-text-extra-small-body-extra-small-regular-font-size);
+  font-style: var(--body-text-extra-small-body-extra-small-regular-font-style);
+  font-weight: var(--body-text-extra-small-body-extra-small-regular-font-weight);
+  left: 0;
+  letter-spacing: var(
+    --body-text-extra-small-body-extra-small-regular-letter-spacing
+  );
+  line-height: var(--body-text-extra-small-body-extra-small-regular-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input.disabled .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+}
+
+.large-input.default .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  height: 12px;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: relative;
+}
+
+.large-input.typing .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+}
+
+.large-input.filled .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+}
+
+.large-input.success .michael-harmen {
+  color: var(--primarygreen500-success-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  left: 0;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input.caption .michael-harmen {
+  color: var(--secondarydark-grey500-placeholder-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  left: 0;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.large-input.error .michael-harmen {
+  color: var(--primaryred500-error-color);
+  font-family: "DM Sans", Helvetica;
+  font-size: 10px;
+  font-weight: 400;
+  left: 0;
+  letter-spacing: -0.20px;
+  line-height: 10px;
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}

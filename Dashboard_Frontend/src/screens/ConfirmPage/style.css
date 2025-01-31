@@ -1,0 +1,199 @@
+.confirm-page {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.confirm-page .overlap-wrapper-2 {
+  background-color: rgba(0, 0, 0, 0.7);
+  height: 907px;
+  width: 1472px;
+  z-index: 1000;
+}
+
+.confirm-page .overlap-47 {
+  height: 595px;
+  left: 0px;
+  position: relative;
+  top: 100px;
+  width: 692px;
+}
+
+.confirm-page .group-44 {
+  height: 595px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 692px;
+}
+
+.confirm-page .overlap-48 {
+  height: 595px;
+  position: relative;
+  width: 698px;
+}
+
+.confirm-page .group-45 {
+  height: 595px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 698px;
+}
+
+.confirm-page .overlap-49 {
+  height: 595px;
+  position: relative;
+  width: 692px;
+}
+
+.confirm-page .rectangle-33 {
+  background-color: #ffffff;
+  border-radius: 40px;
+  box-shadow: 0px 4px 30px 7px #7b5cff3b;
+  height: 595px;
+  left: 57px;
+  position: absolute;
+  top: 0;
+  width: 543px;
+}
+
+.confirm-page .rectangle-34 {
+  background-color: #e9edf7;
+  border-radius: 18px;
+  height: 36px;
+  left: 311px;
+  position: absolute;
+  top: 409px;
+  width: 238px;
+}
+
+.confirm-page .text-wrapper-118 {
+  color: var(--secondarygrey-900);
+  font-family: var(--display-text-small-display-small-bold-font-family);
+  font-size: var(--display-text-small-display-small-bold-font-size);
+  font-style: var(--display-text-small-display-small-bold-font-style);
+  font-weight: var(--display-text-small-display-small-bold-font-weight);
+  left: 131px;
+  letter-spacing: var(--display-text-small-display-small-bold-letter-spacing);
+  line-height: var(--display-text-small-display-small-bold-line-height);
+  position: absolute;
+  text-align: center;
+  top: 57px;
+  width: 396px;
+}
+
+.confirm-page .text-wrapper-119 {
+  color: var(--secondarygrey-900);
+  font-family: "DM Sans", Helvetica;
+  font-size: 20px;
+  font-weight: 700;
+  left: 0;
+  letter-spacing: -0.40px;
+  line-height: 42px;
+  position: absolute;
+  text-align: center;
+  top: 406px;
+  white-space: nowrap;
+  width: 396px;
+}
+
+.confirm-page .frame-7 {
+  height: 67px;
+  left: 100px;
+  position: absolute;
+  top: 487px;
+  width: 592px;
+}
+
+.confirm-page .frame-8 {
+  height: 67px;
+}
+
+.confirm-page .overlap-group-16 {
+  height: 67px;
+  position: relative;
+  width: 592px;
+  cursor: pointer;
+}
+
+.confirm-page .rectangle-35 {
+  background-color: #0a1f62;
+  border-radius: 32.5px;
+  height: 67px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 457px;
+}
+
+.confirm-page .text-wrapper-120 {
+  color: #ffffff;
+  font-family: "DM Sans", Helvetica;
+  font-size: 26px;
+  font-weight: 500;
+  left: 182px;
+  letter-spacing: -0.52px;
+  line-height: 42px;
+  position: absolute;
+  top: 7px;
+  white-space: nowrap;
+  width: 410px;
+}
+
+.confirm-page .text-wrapper-121 {
+  color: var(--secondarygrey-900);
+  font-family: "DM Sans", Helvetica;
+  font-size: 20px;
+  font-weight: 700;
+  left: 232px;
+  letter-spacing: -0.40px;
+  line-height: 42px;
+  position: absolute;
+  text-align: center;
+  top: 406px;
+  white-space: nowrap;
+  width: 396px;
+}
+
+.confirm-page .on-track-8 {
+  height: 61px;
+  left: 329px;
+  position: absolute;
+  top: 276px;
+  width: 61px;
+}
+
+.confirm-page .frame-9 {
+  background-color: #05cd99;
+  border-radius: 228.98px;
+  height: 61px;
+  overflow: hidden;
+  position: relative;
+}
+
+.confirm-page .done-3 {
+  height: 55px !important;
+  left: 4px !important;
+  top: 4px !important;
+  width: 55px !important;
+}
+
+.confirm-page .web-brand-logo-4 {
+  height: 135px;
+  left: 236px;
+  position: absolute;
+  top: 180px;
+  width: 186px;
+}
+
+.confirm-page .group-46 {
+  display: block;
+  height: 19px;
+  left: 547px;
+  position: absolute;
+  top: 38px;
+  width: 19px;
+}
