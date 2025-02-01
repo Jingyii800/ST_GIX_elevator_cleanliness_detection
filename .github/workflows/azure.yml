@@ -72,5 +72,5 @@ jobs:
           package: 'Dashboard_Backend/'  # ✅ Directly deploy from the backend folder
 
       - name: Restart App Service
-        run: az webapp restart --name elevatorCleanlinessDetection --resource-group <YOUR_RESOURCE_GROUP>
+        run: az webapp restart --name elevatorCleanlinessDetection --resource-group Elevator_Detector
 
