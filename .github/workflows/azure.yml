@@ -32,20 +32,12 @@ jobs:
         run: |
           cd Dashboard_Backend  # ✅ Use the correct folder name
           pip install -r requirements.txt
-        
 
-      - name: Zip artifact for deployment
-        run: |
-          cd Dashboard_Backend  # ✅ Use the correct folder name
-          zip -r release.zip ./* 
-
-      - name: Upload artifact for deployment jobs
+      - name: Upload artifact for deployment jobs (Skip Zipping)
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            Dashboard_Backend/release.zip
-            !Dashboard_Backend/venv/
+          path: Dashboard_Backend/  # ✅ Deploy the entire folder without zipping
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,9 +54,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-
-      - name: Unzip artifact for deployment
-        run: unzip Dashboard_Backend/release.zip -d Dashboard_Backend
+          path: Dashboard_Backend/
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -73,13 +63,14 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-      - name: Deploy Flask App to Azure
+      - name: Deploy Flask App to Azure (No Zip)
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'elevatorCleanlinessDetection'  # ✅ Replace with your Azure App Service name
           slot-name: 'Production'
-          package: 'Dashboard_Backend'  # ✅ Use the correct folder name
+          package: 'Dashboard_Backend/'  # ✅ Directly deploy from the backend folder
 
       - name: Restart App Service
         run: az webapp restart --name elevatorCleanlinessDetection --resource-group <YOUR_RESOURCE_GROUP>
+
