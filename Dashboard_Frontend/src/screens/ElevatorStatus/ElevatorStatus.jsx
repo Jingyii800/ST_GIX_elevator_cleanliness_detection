@@ -5,194 +5,177 @@ import { ActiveAlerts } from "../ActiveAlerts/ActiveAlerts";
 import "./style.css";
 
 export const ElevatorStatus = () => {
-
+  const [station, setStation] = useState(""); // Selected station
+  const [elevator, setElevator] = useState(""); // Selected elevator number
+  const [logs, setLogs] = useState([]); // Logs from API
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error handling
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [currentTime, setCurrentTime] = useState("");
+
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      const now = new Date();
+      
+      // Format Time (HH:MM:SS AM/PM)
+      const formattedTime = now.toLocaleTimeString([], { 
+        hour: "2-digit", 
+        minute: "2-digit", 
+        second: "2-digit",
+        hour12: true 
+      });
+  
+      // Format Date (Jan 01 2025)
+      const formattedDate = now.toLocaleDateString("en-US", { 
+        month: "short", 
+        day: "2-digit", 
+        year: "numeric" 
+      });
+  
+      setCurrentTime(`${formattedTime} ${formattedDate}`);
+    };
+  
+    updateCurrentTime(); // Set initial time
+    const interval = setInterval(updateCurrentTime, 1000); // Update every second
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
+  // 🔹 Fetch report logs based on filters
+  const fetchElevatorData = async () => {
+    setLoading(true);
+    setError(null);
+
+    let url = `http://localhost:5000//elevator_status?`;
+    console.log(station, elevator)
+    if (station) url += `&station=${encodeURIComponent(station)}`;
+    if (elevator) url += `&elevator_num=${elevator}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to fetch data. Status: ${response.status}`);
+
+      const data = await response.json();
+      // ✅ Sort by ID (ascending order)
+      const sortedData = data.sort((a, b) => a.elevator_num - b.elevator_num);
+      setLogs(sortedData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Fetch logs when filters change
+  useEffect(() => {
+    fetchElevatorData();
+  }, [station, elevator]);
 
   return (
     <div className="report-logs">
-      <div className="div-5">
-        <div className="text-wrapper-58">Hi Andrei,</div>
+      <div className="div-2">
+        <img className="vector" alt="Vector" src="/img/vector-2-1.png" />
 
-        <p className="text-wrapper-59">Find Elevator Sensor Status Here</p>
+        <div className="div-3">
+          <div className="div-3">
+            <LargeInput
+              className="large-input-instance"
+              overlapClassName="design-component-instance-node"
+              state="default"
+              type="search-icon"
+            />
+            <div className="text-wrapper-6">Hi Andrei,</div>
 
-        <div className="overlap-20">
-          <Sidebar activePage="Elevator Status" 
-          />
+            <div className="text-wrapper-7">Elevator Status</div>
 
-          <div className="noun-status">
-            <div className="overlap-21">
-              <div className="text-wrapper-60">Created by Larea</div>
-
-              <div className="text-wrapper-61">from the Noun Project</div>
+            <div className="overlap-2">
+              <div className="side-bar">
+                <Sidebar activePage="Elevator Status" 
+                />
+              </div>
             </div>
+
+            {/* 🔹 Time Filters */}
+            <div className="group-6">
+              <div className="overlap-10">
+                <div className="overlap-group-4">
+                  <div className = "text-wrapper-26">Current Time: {currentTime}</div>
+                </div>
           </div>
-        </div>
-
-        <p className="current-time-PM">
-          Current
-          Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1:44
-          PM&nbsp;&nbsp;&nbsp;&nbsp;Jan 30 2025
-        </p>
-
-        <LargeInput
-          captionTextClassName="large-input-3"
-          className="large-input-instance"
-          overlapClassName="large-input-2"
-          state="default"
-          type="search-icon"
-        />
-        <div className="group-22">
-          <div className="overlap-22">
-            <img className="vector-16" alt="Vector" src="/img/vector.png" />
-
-            <div className="text-wrapper-62">UW&nbsp;&nbsp;Station</div>
-          </div>
-
-          <div className="overlap-23">
-            <img className="vector-17" alt="Vector" src="/img/vector.png" />
-
-            <div className="line-4">Line&nbsp;&nbsp; 1</div>
-          </div>
-
-          <div className="overlap-24">
-            <div className="text-wrapper-62">Elevator&nbsp;&nbsp;——</div>
-
-            <img className="vector-18" alt="Vector" src="/img/vector.png" />
-          </div>
-        </div>
-
-        <div className="overlap-25">
-          <div className="text-wrapper-63">Line</div>
-
-          <div className="text-wrapper-64">Station</div>
-
-          <div className="elevator-3"> Elevator</div>
-
-          <div className="text-wrapper-65">Status</div>
-
-          <div className="text-wrapper-66">Sensor</div>
-
-          <div className="group-23">
-            <div className="overlap-26">
-              <div className="text-wrapper-67">Line 1</div>
-
-              <div className="text-wrapper-68">Lynnwood City Center</div>
             </div>
 
-            <div className="text-wrapper-69">Line 1</div>
+            {/* 🔹 Station & Elevator Filters */}
+            <div className="group-7">
+              <div className="UW-station-wrapper">
+                <select className="station-dropdown" value={station} onChange={(e) => setStation(e.target.value)}>
+                <option value="">All</option>
+                  <option value="University Of Washington">University of Washington</option>
+                  <option value="Seattle Central">Seattle Central</option>
+                  <option value="Bellevue Station">Bellevue Station</option>
+                </select>
+              </div>
 
-            <div className="overlap-27">
-              <div className="text-wrapper-67">Line 1</div>
-
-              <div className="text-wrapper-68">Mountlake Terrace</div>
-            </div>
-
-            <div className="overlap-28">
-              <div className="text-wrapper-70">Line 1</div>
-
-              <div className="text-wrapper-68">Shoreline South/148th</div>
-            </div>
-
-            <div className="overlap-29">
-              <div className="text-wrapper-67">Line 1</div>
-
-              <div className="text-wrapper-68">Northgate</div>
-            </div>
-
-            <div className="text-wrapper-71">23</div>
-
-            <div className="text-wrapper-72">24</div>
-
-            <div className="text-wrapper-73">25</div>
-
-            <div className="text-wrapper-74">26</div>
-
-            <div className="text-wrapper-75">27</div>
-
-            <div className="text-wrapper-76">Shoreline North/185th</div>
-
-            <div className="depth-frame-9">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
+              <div className="elevator-wrapper">
+                <select className="elevator-dropdown" value={elevator} onChange={(e) => setElevator(e.target.value)}>
+                  <option value="0">All</option>
+                  <option value="1">Elevator 1</option>
+                  <option value="2">Elevator 2</option>
+                  <option value="3">Elevator 3</option>
+                  <option value="4">Elevator 4</option>
+                  <option value="5">Elevator 5</option>
+                  <option value="5">Elevator 6</option>
+                  <option value="7">Elevator 7</option>
+                  <option value="8">Elevator 8</option>
+                </select>
               </div>
             </div>
 
-            <div className="depth-frame-11">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
+            <div className="overlap-3">
+            <div className="report-logs-container elevator-status">
+                  {/* 🔹 Logs Table */}
+                  <div className="logs-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Location</th>
+                          <th>Humidity Status</th>
+                          <th>Air Quailty Status</th>
+                          <th>Infrared Status</th>
+                          <th>Passenger Report</th>
+                          <th>Alert</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {logs.map((log, index) => (
+                          <tr key={index}>
+                            <td>{log.station} ,Elevator {log.elevator_num}</td>
+                            <td>{log.humidity}, {log.humidity_status}</td>
+                            <td>{log.air_quality}, {log.air_quality_status}</td>
+                            <td>{log.infrared}, {log.infrared_status}</td>
+                            <td>{log.passenger_button_status}</td>
+                            <td>
+                              <span className={`status-badge ${log.alert_status == "Normal" ? "resolved" : "in-progress"}`}>
+                                {log.resolved ? "Resolved" : log.alert_status == "Normal" ? "Normal" : "Active"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            <ActiveAlerts isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+            <div className="group-4" onClick={() => setModalOpen(true)}>
+              <div className="overlap-9">
+                <img className="vector-4" alt="Vector" src="/img/vector-3.png" />
+
+                <div className="group-5" />
+
+                <div className="text-wrapper-25">4</div>
               </div>
             </div>
-
-            <div className="depth-frame-12">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-13">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-14">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-15">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Good</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-16">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Processing</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-17">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Processing</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-18">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Processing</div>
-              </div>
-            </div>
-
-            <div className="depth-frame-19">
-              <div className="depth-frame-10">
-                <div className="text-wrapper-77">Processing</div>
-              </div>
-            </div>
-
-            <img className="vector-19" alt="Vector" src="/img/vector-3-1.png" />
-
-            <img className="vector-20" alt="Vector" src="/img/vector-3-1.png" />
-
-            <img className="vector-21" alt="Vector" src="/img/vector-3-1.png" />
-
-            <img className="vector-22" alt="Vector" src="/img/vector-3-1.png" />
-
-            <img className="vector-23" alt="Vector" src="/img/vector-3-1.png" />
-
-            <img className="vector-24" alt="Vector" src="/img/vector-3-1.png" />
-          </div>
-        </div>
-
-        <ActiveAlerts isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-        <div className="group-24" >
-          <div className="overlap-30" onClick={() => setModalOpen(true)}>
-            <img className="vector-25" alt="Vector" src="/img/vector-3.png" />
-
-            <div className="group-25" />
-
-            <div className="text-wrapper-78">4</div>
           </div>
         </div>
       </div>

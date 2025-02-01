@@ -719,7 +719,7 @@
 
 .dashboard-elevator .overlap-37 {
   border-radius: 20px;
-  height: 333px;
+  height: 310px;
   position: relative;
 }
 
@@ -778,12 +778,12 @@
 }
 
 .dashboard-elevator .image {
-  height: 253px;
-  left: 363px;
+  height: 230px;
+  left: 380px;
   object-fit: cover;
   position: absolute;
   top: 58px;
-  width: 301px;
+  width: auto;
 }
 
 .dashboard-elevator .group-32 {
@@ -1087,7 +1087,7 @@
 
 .medium-chart {
   display: block;
-  height: 336px;
+  height: 310px;
   left: 369px;
   border-radius: 20px;
   position: absolute;
@@ -1538,7 +1538,7 @@
   margin-left: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .sensor-item {
@@ -1615,4 +1615,14 @@
   font-size: 18px;
   font-weight: bold;
   color: #1b2559;
+}
+
+.dashboard-elevator .overlap-9 {
+  height: 310px;
+  left: 321px;
+  background-color: white;
+  position: absolute;
+  top: 518px;
+  border-radius: 20px;
+  width: 350px;
 }

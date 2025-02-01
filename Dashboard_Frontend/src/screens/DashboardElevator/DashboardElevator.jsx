@@ -8,7 +8,7 @@ export const DashboardElevator = () => {
 
   const [showAlert, setShowAlert] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [reportLogs, setReportLogs] = useState([]);
   const { stationName, elevatorId } = useParams(); // ✅ Extract URL parameters
   const decodedStationName = decodeURIComponent(stationName);
 
@@ -25,32 +25,53 @@ export const DashboardElevator = () => {
   }, []);
 
 
-  useEffect(() => {
-    // Fetch data from API using parameters
-    const fetchElevatorData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/elevator_status?station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
-        );
+  const fetchElevatorData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/elevator_status?station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
+      );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data.length === 0) {
-          throw new Error("No data found for this elevator.");
-        }
-
-        setSensorData(data[0]); // Store first record in state
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
 
+      const data = await response.json();
+      if (data.length === 0) {
+        throw new Error("No data found for this elevator.");
+      }
+
+      setSensorData(data[0]); // Store first record in state
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchReportLogs = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/report_logs?time_filter=daily&station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch report logs");
+
+      const data = await response.json();
+
+      // 🔹 Store only the latest 5 logs
+      const latestLogs = data.slice(0, 5);
+
+      setReportLogs(latestLogs);
+      console.log("Fetched Report Logs:", data);
+    } catch (error) {
+      console.error("Error fetching report logs:", error);
+    }
+  };
+
+
+  useEffect(() => {
     fetchElevatorData();
+    fetchReportLogs();
   }, [stationName, elevatorId]);
 
   // ✅ Show loading or error messages before rendering UI
@@ -332,72 +353,43 @@ export const DashboardElevator = () => {
             Elevator {elevatorId}, {decodedStationName} Station
           </h1>
 
-        <div className="overlap-42">
-          <Link className="medium-chart-4" to="/dashboard-41">
-            <div className="overlap-43">
-              <div className="medium-chart-5">
-                <div className="label-6">Report Logs</div>
-              </div>
+        <div className="overlap-9">
+          <Link className="label-2"  to="/report-logs">Report Logs</Link>
 
-              <div className="name-7">UW Station, Elevator 2</div>
+          <div className="report-logs-content">
+            {reportLogs.length > 0 ? (
+              reportLogs.map((log, index) => (
+                <div key={index} className="report-log-item">
+                    {/* 🚀 Elevator Location at the Top */}
+                    <p className="log-location">
+                      <strong>{log.station}, Elevator {log.elevatorNumber}</strong>
+                    </p>
 
-              <div className="date-7">12:00pm&nbsp;&nbsp;2024/12/07</div>
+                    {/* 🔹 Alert Icon & Status Progress in Flexbox */}
+                    <div className="log-details">
+                      <div className="log-icon">
+                        <img
+                          src={log.resolved ? "/img/checkmark.png" : "/img/on-track.png"}
+                          alt={log.resolved ? "Resolved" : "Warning"}
+                          className={log.resolved ? "resolved-icon" : "warning-icon"}
+                        />
+                      </div>
+                      <div className="log-status-text">
+                        <p className={`status-text ${log.resolved ? "status-resolved" : "status-warning"}`}>
+                          {log.resolved ? "Resolved" : "Warning"}
+                        </p>
+                      </div>
+                    </div>
 
-              <img
-                className="vector-30"
-                alt="Vector"
-                src="/img/vector-2-3.png"
-              />
-
-              <div className="rectangle-31" />
-            </div>
-          </Link>
-
-          <div className="name-8">UW Station, Elevator 7</div>
-
-          <div className="group-35">
-            <div className="overlap-44">
-              <img
-                className="group-36"
-                alt="Group"
-                src="/img/group-632523.png"
-              />
-
-              <img
-                className="on-track-7"
-                alt="On track"
-                src="/img/on-track.png"
-              />
-            </div>
-          </div>
-
-          <div className="group-37">
-            <img className="group-38" alt="Group" src="/img/group-632523.png" />
-          </div>
-
-          <div className="name-9">Warning</div>
-
-          <div className="name-10">Warning</div>
-
-          <div className="date-8">Resolution in progress</div>
-
-          <div className="date-9">Resolution in progress</div>
-
-          <div className="group-37">
-            <div className="overlap-44">
-              <img
-                className="group-36"
-                alt="Group"
-                src="/img/group-632523.png"
-              />
-
-              <img
-                className="on-track-7"
-                alt="On track"
-                src="/img/on-track.png"
-              />
-            </div>
-          </div>
+                    {/* ⏳ Timestamp at the Bottom */}
+                    <p className="log-time">{new Date(log.timeStamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} {new Date(log.timeStamp).toLocaleDateString()}</p>
+                    
+                  </div>
+              ))
+            ) : (
+              <p className="no-logs">No reports available.</p>
+            )}
+          </div>                
         </div>
 
         <img className="vector-31" alt="Vector" src="/img/vector-2.png" />

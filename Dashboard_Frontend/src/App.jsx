@@ -32,10 +32,10 @@ const router = createBrowserRouter([
     path: "/active-alerts",
     element: <ActiveAlerts />,
   },
-  // {
-  //   path: "/*",
-  //   element: <DashboardStation />,
-  // },
+  {
+    path: "/*",
+    element: <DashboardStation />,
+  },
 ]);
 
 export const App = () => {

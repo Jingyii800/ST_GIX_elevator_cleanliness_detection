@@ -69,7 +69,12 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
             WHERE logID = ?
             """
             cursor.execute(update_query, staff, resolved_time, duration, logID)
-            logging.info(f"NFC data processed and issue resolved for station {station} by {staff}. Duration: {duration} minutes.")
+
+            cursor.execute("""
+            UPDATE Elevator_Sensor_Status
+            SET Alert_Status = 'Normal
+            WHERE Station = ? AND Elevator_Num = ?""", station, elevator_num)
+            logging.info(f"✅ Issue resolved for {station}, Elevator {elevator_num} by {staff} (Duration: {duration} min)")
 
         else:
             # Process sensor data
@@ -78,38 +83,67 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
             air_quality = data["sensor"]["airQuality"]
             passenger_button = data["sensor"]["button"]
             timestamp = datetime.utcnow()            
-            # write current data in table Elevator_Sensor_Status
-            # Insert into Elevator_Sensor_Status table
-            sensor_insert_query = """
-            INSERT INTO Elevator_Sensor_Status (Time, Station, Elevator_Num, Humidity, Infrared, AirQuality, PassengerButton)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """
-            cursor.execute(sensor_insert_query, timestamp, station, elevator_num, humidity, infrared, air_quality, passenger_button)
-            logging.info("Sensor data stored successfully.")
 
             # TODO: check abnormal_counts based on Machine Learning from database
             
-            # Check for abnormal sensor values
-            air_quality_abnormal = air_quality < 50  # Threshold for air quality
-            humidity_abnormal = humidity > 80  # Threshold for humidity
-            infrared_abnormal = infrared > 30  # Threshold for infrared
-            button_abnormal = passenger_button == 1  # Button pressed
+            # 🟢 Define Status Based on Thresholds
+            humidity_status = "Warning" if humidity > 80 else "Good"
+            infrared_status = "Warning" if infrared > 30 else "Good"
+            air_quality_status = "Warning" if air_quality < 50 else "Good"
+            passenger_button_status = "Warning" if passenger_button == 1 else "Good"
 
-            abnormal_count = sum([humidity_abnormal, infrared_abnormal, button_abnormal])
+            # 🟡 Count Warnings (if 2+ AND air quality is bad, trigger an alert)
+            warning_count = sum([humidity_status == "Warning", infrared_status == "Warning", passenger_button_status == "Warning"])
 
-            if air_quality_abnormal and abnormal_count >= 2:
-                # Log abnormality in Elevator_Cleanliness_Logs
+            # 📝 Insert Sensor Data into Elevator_Sensor_Status
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # 🚨 Insert Alert if Conditions Met
+            if air_quality_status == "Warning" and warning_count >= 2:
+                alert_status = "Active"
+
+                # ✅ Insert New Alert in Logs
                 alert_query = """
-                INSERT INTO Elevator_Cleanliness_Logs (timeStamp, station, elevatorNumber, Issue, Humidity, Infrared, Air_Quality, Passenger_Reported)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO Elevator_Cleanliness_Logs 
+                    (timeStamp, station, elevatorNumber, Issue, Humidity, Infrared, AirQuality, PassengerReport, confirmed)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
                 """
-                cursor.execute(alert_query, timestamp, station, elevator_num, "liquid", humidity, infrared, air_quality, passenger_button)
+                cursor.execute(alert_query, (timestamp, station, elevator_num, "Liquid", humidity, infrared, air_quality, passenger_button))
 
-                # Trigger an alert via WebSocket (pseudo function call)
-                send_alert(station, elevator_num, "Sensor Abnormality detected")
-                logging.info(f"Alert triggered for Station: {station}, Elevator: {elevator_num}")
+                # ✅ Trigger WebSocket Alert
+                logging.info(f"🚨 Alert Triggered: {station}, Elevator {elevator_num} (Sensor Abnormality)")
 
-        conn.commit()
+            else:
+                alert_status = "Normal"
+
+            # 🔄 Upsert Sensor Data (Ensures One Row Per Elevator)
+            sensor_query = """
+                MERGE INTO Elevator_Sensor_Status AS Target
+                USING (SELECT ? AS Station, ? AS Elevator_Num) AS Source
+                ON Target.Station = Source.Station AND Target.Elevator_Num = Source.Elevator_Num
+                WHEN MATCHED THEN 
+                    UPDATE SET 
+                        Time = ?, Humidity = ?, Humidity_Status = ?, 
+                        Infrared = ?, Infrared_Status = ?, 
+                        AirQuality = ?, AirQuality_Status = ?, 
+                        PassengerButton = ?, PassengerButton_Status = ?, 
+                        Alert_Status = ?
+                WHEN NOT MATCHED THEN 
+                    INSERT (Time, Station, Elevator_Num, Humidity, Humidity_Status, 
+                            Infrared, Infrared_Status, AirQuality, AirQuality_Status, 
+                            PassengerButton, PassengerButton_Status, Alert_Status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """
+            cursor.execute(sensor_query, 
+                (station, elevator_num, timestamp, humidity, humidity_status, 
+                infrared, infrared_status, air_quality, air_quality_status, 
+                passenger_button, passenger_button_status, alert_status, 
+                timestamp, station, elevator_num, humidity, humidity_status, 
+                infrared, infrared_status, air_quality, air_quality_status, 
+                passenger_button, passenger_button_status, alert_status)
+            )
+
+            conn.commit()
 
     except Exception as e:
         logging.error(f"Database connection error: {str(e)}")

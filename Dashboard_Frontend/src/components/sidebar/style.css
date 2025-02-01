@@ -62,3 +62,24 @@
 .sidebar-item:hover {
   background-color: rgba(0, 47, 108, 0.1);
 }
+
+.sidebar-weather {
+  margin-top: 300px;
+  left: 40px;
+  color: #0a1f62;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 8px;
+  width: 80%;
+}
+
+.weather-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.weather-info {
+  font-size: 14px;
+  margin: 2px 0;
+}

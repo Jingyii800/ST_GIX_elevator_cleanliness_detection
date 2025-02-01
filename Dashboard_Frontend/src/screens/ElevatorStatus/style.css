@@ -785,3 +785,16 @@
   white-space: nowrap;
   width: 26px;
 }
+
+.report-logs .text-wrapper-26 {
+  color: #002e6c;
+  font-family: "DM Sans", Helvetica;
+  font-size: 13.8px;
+  font-weight: 500;
+  left: 60px;
+  letter-spacing: -0.28px;
+  line-height: 24.2px;
+  position: absolute;
+  top: 7px;
+  white-space: nowrap;
+}

@@ -7,22 +7,70 @@ import "./style.css";
 
 export const DashboardStation = () => {
 
-  const stationName = "University of Washington"; // Example station name
-
-  // Elevator status data
-  const elevators = [
-    { id: 1, status: "Good" },
-    { id: 2, status: "Warning" },
-    { id: 3, status: "Warning" },
-    { id: 4, status: "Good" },
-    { id: 5, status: "Good" },
-    { id: 6, status: "Warning" },
-    { id: 7, status: "Good" },
-    { id: 8, status: "Good" },
-  ];
-
+  const [stationName, setStationName] = useState("University of Washington"); // Default Station
+  const [elevators, setElevators] = useState([]); // Store fetched elevator data
+  const [reportLogs, setReportLogs] = useState([]);
   const [showAlert, setShowAlert] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const stationOptions = [
+    "University of Washington",
+    "Seattle Central",
+    "Pioneer Square",
+    "Westlake",
+    "Columbia City",
+    "Bellevue Station",
+  ];
+
+  const fetchElevatorStatus = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/elevator_status?station=${encodeURIComponent(stationName)}`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch elevator status");
+
+      const data = await response.json();
+
+      const updatedElevators = data
+      .map((elevator) => ({
+        id: elevator.elevator_num,
+        status: elevator.alert_status, // Use Alert_Status from database
+      }))
+      .sort((a, b) => a.id - b.id);
+
+      setElevators(() => updatedElevators);
+    } catch (error) {
+      console.error("Error fetching elevator status:", error);
+    }
+  };
+
+  const fetchReportLogs = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/report_logs?time_filter=daily&station=${encodeURIComponent(stationName)}`
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch report logs");
+
+      const data = await response.json();
+
+      // 🔹 Store only the latest 5 logs
+      const latestLogs = data.slice(0, 5);
+
+      setReportLogs(latestLogs);
+      console.log("Fetched Report Logs:", data);
+    } catch (error) {
+      console.error("Error fetching report logs:", error);
+    }
+  };
+
+  // 🔹 Fetch elevator status & report logs from the backend
+  useEffect(() => {
+    fetchElevatorStatus();
+    fetchReportLogs();
+  }, [stationName]);
+
 
   useEffect(() => {
     // Auto-hide the alert after 10 seconds
@@ -157,10 +205,10 @@ export const DashboardStation = () => {
                     {/* Clickable Status Box */}
                     <Link
                       to={`/elevator-status/${encodeURIComponent(stationName)}/${elevator.id}`}
-                      className={`depth-frame ${elevator.status.toLowerCase()}`}
+                      className={`depth-frame ${elevator.status === "Normal" ? "good-status" : "warning-status"}`}
                     >
                       <div className="depth-frame-2">
-                        <div className="text-wrapper-47">{elevator.status}</div>
+                        <div className="text-wrapper-47">{elevator.status === "Normal" ? "Good" : "Warning"}</div>
                       </div>
                     </Link>
                   </div>
@@ -197,74 +245,58 @@ export const DashboardStation = () => {
 
         <div className="text-wrapper-49">Hi Andrei,</div>
 
-        <div className="text-wrapper-50">University of Washington Station</div>
+        <div className="dropdown-container">
+          <select 
+            className="text-wrapper-50"
+            value={stationName} Station
+            onChange={(e) => setStationName(e.target.value)}
+          >
+            {stationOptions.map((station) => (
+              <option key={station} value={station}>
+                {station}
+              </option>
+            ))}
+          </select>
+          <span className="text-wrapper-50"> Station</span> {/* Added station text */}
+        </div>
 
         <div className="overlap-9">
-          <Link className="medium-chart-2" to="/report-logs">
-            <div className="overlap-10">
-              <div className="medium-chart-3">
-                <div className="label-2">Report Logs</div>
-              </div>
+          <Link className="label-2"  to="/report-logs">Report Logs</Link>
 
-              <div className="name-2">UW Station, Elevator 2</div>
+          <div className="report-logs-content">
+            {reportLogs.length > 0 ? (
+              reportLogs.map((log, index) => (
+                <div key={index} className="report-log-item">
+                    {/* 🚀 Elevator Location at the Top */}
+                    <p className="log-location">
+                      <strong>{log.station}, Elevator {log.elevatorNumber}</strong>
+                    </p>
 
-              <div className="date-2">12:00pm&nbsp;&nbsp;2024/12/07</div>
+                    {/* 🔹 Alert Icon & Status Progress in Flexbox */}
+                    <div className="log-details">
+                      <div className="log-icon">
+                        <img
+                          src={log.resolved ? "/img/checkmark.png" : "/img/on-track.png"}
+                          alt={log.resolved ? "Resolved" : "Warning"}
+                          className={log.resolved ? "resolved-icon" : "warning-icon"}
+                        />
+                      </div>
+                      <div className="log-status-text">
+                        <p className={`status-text ${log.resolved ? "status-resolved" : "status-warning"}`}>
+                          {log.resolved ? "Resolved" : "Warning"}
+                        </p>
+                      </div>
+                    </div>
 
-              <img
-                className="vector-9"
-                alt="Vector"
-                src="/img/vector-2-3.png"
-              />
-
-              <div className="rectangle-16" />
-            </div>
-          </Link>
-
-          <div className="name-3">UW Station, Elevator 7</div>
-
-          <div className="group-8">
-            <div className="overlap-11">
-              <img
-                className="group-9"
-                alt="Group"
-                src="/img/group-632523.png"
-              />
-
-              <img
-                className="on-track-3"
-                alt="On track"
-                src="/img/on-track.png"
-              />
-            </div>
-          </div>
-
-          <div className="group-10">
-            <img className="group-11" alt="Group" src="/img/group-632523.png" />
-          </div>
-
-          <div className="name-4">Warning</div>
-
-          <div className="name-5">Warning</div>
-
-          <div className="date-3">Resolution in progress</div>
-
-          <div className="date-4">Resolution in progress</div>
-
-          <div className="group-10">
-            <div className="overlap-11">
-              <img
-                className="group-9"
-                alt="Group"
-                src="/img/group-632523.png"
-              />
-
-              <img
-                className="on-track-3"
-                alt="On track"
-                src="/img/on-track.png"
-              />
-            </div>
-          </div>
+                    {/* ⏳ Timestamp at the Bottom */}
+                    <p className="log-time">{new Date(log.timeStamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} {new Date(log.timeStamp).toLocaleDateString()}</p>
+                    
+                  </div>
+              ))
+            ) : (
+              <p className="no-logs">No reports available.</p>
+            )}
+          </div>                
         </div>
 
         <div className="overlap-12">

@@ -97,24 +97,56 @@ def update_alerts(alert_id):
 # Mark false alert
 @bp.route('/alerts/<int:alert_id>/false_alarm', methods=["PUT"])
 def mark_false_alarm(alert_id):
-    """Mark the alert as a false alarm."""
+    """Mark the alert as a false alarm and reset elevator alert status."""
 
     conn = get_db_connection()
     if not conn:
         return jsonify({"error": "Database connection failed"}), 500
-    
 
-    cursor = conn.cursor()
-    query = """
+    try:
+        cursor = conn.cursor()
+
+        # 🔹 Fetch station & elevator number related to the alert
+        query_fetch = """
+            SELECT station, elevatorNumber 
+            FROM Elevator_Cleanliness_Logs 
+            WHERE logID = ?
+        """
+        cursor.execute(query_fetch, (alert_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({"error": f"Alert {alert_id} not found."}), 404
+
+        station, elevator_num = result
+
+        # ✅ Mark False Alert in Logs
+        query_update_log = """
             UPDATE Elevator_Cleanliness_Logs 
             SET falseAlert = 1, confirmed = 1
             WHERE logID = ?
-            """
-    cursor.execute(query, (alert_id))
-    conn.commit()
-    conn.close()
+        """
+        cursor.execute(query_update_log, (alert_id,))
 
-    return jsonify({"message": f"Alert {alert_id} issue marked as false alarm."}), 200
+        # ✅ Update Alert Status in `Elevator_Sensor_Status`
+        query_update_sensor = """
+            UPDATE Elevator_Sensor_Status 
+            SET Alert_Status = 'Normal'
+            WHERE Station = ? AND Elevator_Num = ?
+        """
+        cursor.execute(query_update_sensor, (station, elevator_num))
+
+        conn.commit()
+
+        return jsonify({"message": f"Alert {alert_id} marked as false alarm. Elevator {elevator_num} status reset to 'Normal'."}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 
 # Confirm alert and notify staff
 @bp.route('/alerts/<int:alert_id>/confirm_alert', methods=['PUT'])
@@ -227,6 +259,7 @@ def get_elevator_status():
             ESS.AirQuality_Status,
             ESS.PassengerButton,
             ESS.PassengerButton_Status,
+            ESS.Alert_Status,  -- ✅ Added Alert Status
             ESS.Time
         FROM Elevator_Sensor_Status AS ESS
         WHERE Time = (
@@ -271,8 +304,8 @@ def get_elevator_status():
             "air_quality_status": row.AirQuality_Status,
             "passenger_button": bool(row.PassengerButton),
             "passenger_button_status": row.PassengerButton_Status,
+            "alert_status": row.Alert_Status,  # ✅ Added Alert Status
             "time": row.Time
         })
-    print(sensor_data)
 
     return jsonify(sensor_data), 200

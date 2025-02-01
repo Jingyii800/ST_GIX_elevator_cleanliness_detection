@@ -1,1 +1,0 @@
-export { ShowChart } from "./ShowChart";
