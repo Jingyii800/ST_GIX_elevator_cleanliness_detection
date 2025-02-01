@@ -1,0 +1,31 @@
+name: Deploy Flask Backend to Azure
+
+on:
+  push:
+    branches:
+      - main  # Runs on main branch commits
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11.9'
+
+      - name: Install dependencies
+        run: |
+          cd Dashboard_Backend  # ✅ Set working directory
+          pip install -r requirements.txt
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "elevatorCleanlinessDetection"
+          slot-name: "production"
+          package: "Dashboard_Backend"  # ✅ Deploy only the backend folder
+
