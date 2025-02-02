@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LargeInput } from "../../components/LargeInput";
-import { Sidebar } from "../../components/Sidebar";
+import API_BASE_URL from "../../config";
+import { Sidebar } from "../../components/sidebar";
 import { ActiveAlerts } from "../ActiveAlerts/ActiveAlerts";
 import "./style.css";
 
@@ -22,7 +23,7 @@ export const ReportLogs = () => {
     setLoading(true);
     setError(null);
 
-    let url = `http://localhost:5000/report_logs?time_filter=${timeFilter}`;
+    let url = `${API_BASE_URL}/report_logs?time_filter=${timeFilter}`;
     console.log(station, elevator)
     if (station) url += `&station=${encodeURIComponent(station)}`;
     if (elevator) url += `&elevator_num=${elevator}`;

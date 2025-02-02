@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import { Done } from "../../components/Done";
 import { ConfirmPage } from "../ConfirmPage/ConfirmPage";
 import "./style.css";
@@ -20,7 +20,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/alerts/${selectedAlert.id}/update_issue`,
+        `${API_BASE_URL}/alerts/${selectedAlert.id}/update_issue`,
         {
           method: "PUT",
           headers: {
@@ -47,7 +47,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
   // 🔹 Fetch latest 4 alerts
   const fetchAlerts = async () => {
     try {
-      const response = await fetch("http://localhost:5000/alerts");
+      const response = await fetch(`${API_BASE_URL}/alerts`);
       if (!response.ok) throw new Error("Failed to fetch alerts");
       
       const data = await response.json();
@@ -74,7 +74,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
  // 🔹 Fetch alert details by ID
   const fetchAlertDetails = async (alertId) => {
     try {
-      const response = await fetch(`http://localhost:5000/alerts/${alertId}`);
+      const response = await fetch(`${API_BASE_URL}/alerts/${alertId}`);
       if (!response.ok) throw new Error("Failed to fetch alert details");
 
       const data = await response.json();
@@ -101,7 +101,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/alerts/${selectedAlert.id}/false_alarm`,
+        `${API_BASE_URL}/alerts/${selectedAlert.id}/false_alarm`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -138,7 +138,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/alerts/${selectedAlert.id}/confirm_alert`,
+        `${API_BASE_URL}/alerts/${selectedAlert.id}/confirm_alert`,
         {
           method: "PUT",
           headers: {

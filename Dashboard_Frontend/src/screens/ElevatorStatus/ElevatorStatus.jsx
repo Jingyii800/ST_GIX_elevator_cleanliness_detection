@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LargeInput } from "../../components/LargeInput";
-import { Sidebar } from "../../components/Sidebar";
+import { Sidebar } from "../../components/sidebar";
+import API_BASE_URL from "../../config";
 import { ActiveAlerts } from "../ActiveAlerts/ActiveAlerts";
 import "./style.css";
 
@@ -47,7 +48,7 @@ export const ElevatorStatus = () => {
     setLoading(true);
     setError(null);
 
-    let url = `http://localhost:5000//elevator_status?`;
+    let url = `${API_BASE_URL}/elevator_status?`;
     console.log(station, elevator)
     if (station) url += `&station=${encodeURIComponent(station)}`;
     if (elevator) url += `&elevator_num=${elevator}`;
@@ -118,7 +119,7 @@ export const ElevatorStatus = () => {
 
               <div className="elevator-wrapper">
                 <select className="elevator-dropdown" value={elevator} onChange={(e) => setElevator(e.target.value)}>
-                  <option value="0">All</option>
+                  <option value="">All</option>
                   <option value="1">Elevator 1</option>
                   <option value="2">Elevator 2</option>
                   <option value="3">Elevator 3</option>

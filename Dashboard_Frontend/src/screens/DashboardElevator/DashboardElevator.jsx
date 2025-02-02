@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link , useParams} from "react-router-dom";
+import API_BASE_URL from "../../config";
 import { ActiveAlerts } from "../ActiveAlerts/ActiveAlerts";
-import { Sidebar } from "../../components/Sidebar";
+import { Sidebar } from "../../components/sidebar";
 import "./style.css";
 
 export const DashboardElevator = () => {
@@ -28,7 +29,7 @@ export const DashboardElevator = () => {
   const fetchElevatorData = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/elevator_status?station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
+        `${API_BASE_URL}/elevator_status?station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
       );
 
       if (!response.ok) {
@@ -51,7 +52,7 @@ export const DashboardElevator = () => {
   const fetchReportLogs = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/report_logs?time_filter=daily&station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
+        `${API_BASE_URL}/report_logs?time_filter=weekly&station=${encodeURIComponent(stationName)}&elevator_num=${elevatorId}`
       );
 
       if (!response.ok) throw new Error("Failed to fetch report logs");
