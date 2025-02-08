@@ -15,6 +15,7 @@ import json
 import logging
 import datetime
 import threading
+import statistics
 
 import board
 import busio
@@ -33,10 +34,8 @@ from azure.iot.device import IoTHubDeviceClient, Message
 # Configuration & Azure IoT Hub Connection
 # ==========================================
 
-# ***** Replace the following with your actual connection string *****
 IOTHUB_CONNECTION_STRING = "HostName=elevatorCleanlinessDetector.azure-devices.net;DeviceId=ElevatorDetector;SharedAccessKey=lrTZ47/DX3nWRc4kPtILKfqFf22+7+ojF+7L9GpihnY="
 
-# Station/elevator identifiers (adjust as needed)
 STATION = "University of Washington"
 ELEVATOR_NUM = 1
 
@@ -61,7 +60,6 @@ except Exception as e:
 # Initialize Sensors and Input Devices
 # ==========================================
 
-# Shared I2C bus for ADS1115 (MQ2 sensor)
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 except Exception as e:
@@ -71,12 +69,56 @@ except Exception as e:
 # (1) ADS1115 for MQ2 sensor (air quality)
 try:
     ads = ADS.ADS1115(i2c)
-    ads.gain = 1
+    ads.gain = 2  # Increased sensitivity (2/3 for full 6.144V range)
     mq2_channel = AnalogIn(ads, ADS.P0)
     logger.info("ADS1115 (MQ2 sensor) initialized.")
 except Exception as e:
     logger.error("Failed to initialize ADS1115: " + str(e))
     exit(1)
+
+# **MQ2 Sensor Constants**
+VCC = 3.3  # Raspberry Pi power voltage
+RL = 1.0  # Load resistance in kΩ
+
+A = 100  # MQ2 ammonia calibration constant (from datasheet)
+B = -1.5  # MQ2 ammonia power factor
+
+# **🔹 Step 1: Baseline Calibration (R0 in Clean Air)**
+def calibrate_r0():
+    """Calibrate MQ2 sensor baseline R0 in clean air."""
+    readings = []
+    logger.info("Calibrating MQ2 sensor in clean air... (Wait 10 sec)")
+
+    for _ in range(50):  # Collect 50 samples over 10 sec
+        voltage = mq2_channel.voltage
+        rs = calculate_rs(voltage)
+        if rs:
+            readings.append(rs)
+        time.sleep(0.2)
+
+    r0 = statistics.mean(readings)  # Compute average R0
+    logger.info(f"✅ Calibration complete! R0 = {r0:.3f} kΩ")
+    return r0
+
+def calculate_rs(voltage):
+    """Convert MQ2 voltage to Rs (sensor resistance)."""
+    if voltage <= 0:
+        return None  # Avoid division by zero
+    rs = ((VCC / voltage) - 1) * RL  # Rs calculation
+    return rs
+
+def calculate_ppm(voltage, r0):
+    """Convert MQ2 voltage to gas concentration in ppm."""
+    rs = calculate_rs(voltage)
+    if not rs:
+        return None
+
+    ratio = rs / r0  # Rs/R0 ratio
+    ppm = A * (ratio ** B)  # Apply gas equation
+    return ppm
+
+# Perform calibration at startup
+R0 = calibrate_r0()
 
 # (2) DHT22 sensor on GPIO4
 try:
@@ -86,7 +128,7 @@ except Exception as e:
     logger.error("Failed to initialize DHT22 sensor: " + str(e))
     exit(1)
 
-# (3) Button on GPIO17 with internal pull-up
+# (3) Button on GPIO17
 try:
     button = digitalio.DigitalInOut(board.D17)
     button.direction = digitalio.Direction.INPUT
@@ -96,9 +138,7 @@ except Exception as e:
     logger.error("Failed to initialize button: " + str(e))
     exit(1)
 
-# (4) RFID RC522 module (using SPI via SimpleMFRC522)
-# The SimpleMFRC522 library handles SPI initialization internally.
-# Create a global reader instance.
+# (4) RFID RC522 module
 try:
     rfid_reader = SimpleMFRC522()
     logger.info("RFID RC522 module initialized.")
@@ -119,63 +159,31 @@ def send_message_to_iothub(payload_dict):
         logger.error("Error sending message: " + str(e))
 
 # ==========================================
-# RFID Reading Thread Function
-# ==========================================
-def rfid_thread():
-    """Continuously wait for an RFID card and send its info to IoT Hub."""
-    while True:
-        try:
-            # The read() method blocks until a card is detected.
-            card_id, card_text = rfid_reader.read()
-            rfid_payload = {
-                "station": STATION,
-                "elevator_num": ELEVATOR_NUM,
-                "nfc": {
-                    "id": card_id,
-                    "text": card_text.strip() if card_text else ""
-                },
-                "time": datetime.datetime.utcnow().isoformat() + "Z"
-            }
-            send_message_to_iothub(rfid_payload)
-            logger.info("RFID tag detected: ID: {} Text: {}".format(card_id, card_text))
-            # Delay to prevent reading the same card repeatedly.
-            time.sleep(5)
-        except Exception as e:
-            logger.error("RFID read error: " + str(e))
-            time.sleep(1)
-
-# Start the RFID reading thread (daemon=True means it will exit when the main program exits)
-rfid_thread_instance = threading.Thread(target=rfid_thread, daemon=True)
-rfid_thread_instance.start()
-
-# ==========================================
 # Main Loop: Read Sensors and Send Data
 # ==========================================
 logger.info("Starting main sensor loop. Press Ctrl+C to exit.")
 
 while True:
     try:
-        # --- Read DHT22 Sensor (temperature and humidity) ---
+        # --- Read DHT22 Sensor ---
         try:
             humidity = dht_sensor.humidity
             temperature_c = dht_sensor.temperature
         except RuntimeError as e:
-            # DHT sensors may fail intermittently.
             logger.warning("DHT22 read error: " + str(e))
             humidity = None
             temperature_c = None
 
-        # --- Read MQ2 Sensor (air quality) ---
+        # --- Read MQ2 Sensor ---
         try:
             mq2_voltage = mq2_channel.voltage
-            # You may convert voltage to a concentration value if desired.
-            air_quality = mq2_voltage
+            ammonia_ppm = calculate_ppm(mq2_voltage, R0)
+            logger.info(f"MQ2 Voltage: {mq2_voltage:.3f}V, Ammonia: {ammonia_ppm:.2f} ppm")
         except Exception as e:
             logger.error("MQ2 sensor read error: " + str(e))
-            air_quality = None
+            ammonia_ppm = None
 
         # --- Read Button ---
-        # (Assuming active-low: pressed = False, so invert the value)
         button_pressed = not button.value
         button_val = 1 if button_pressed else 0
 
@@ -186,7 +194,7 @@ while True:
             "sensor": {
                 "humidity": humidity if humidity is not None else 0,
                 "temperature": temperature_c if temperature_c is not None else 0,
-                "airQuality": air_quality if air_quality is not None else 0,
+                "airQuality": ammonia_ppm if ammonia_ppm is not None else 0,
                 "button": button_val
             },
             "time": datetime.datetime.utcnow().isoformat() + "Z"
@@ -195,7 +203,7 @@ while True:
         # Send sensor data to Azure IoT Hub.
         send_message_to_iothub(sensor_payload)
 
-        # Polling interval (adjust as needed)
+        # Polling interval
         time.sleep(5)
 
     except KeyboardInterrupt:
@@ -205,11 +213,6 @@ while True:
         logger.error("Error in main loop: " + str(e))
         time.sleep(5)
 
-# Cleanup on exit
-try:
-    dht_sensor.exit()
-except Exception:
-    pass
-
 device_client.disconnect()
 logger.info("Disconnected from Azure IoT Hub. Bye!")
+

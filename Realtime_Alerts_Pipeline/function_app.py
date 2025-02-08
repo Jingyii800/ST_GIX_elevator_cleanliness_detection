@@ -24,6 +24,7 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
     # Decode the message and convert from JSON
     message_body = azeventhub.get_body().decode('utf-8')
     data = json.loads(message_body)
+    print(data)
     
     try:
         # Connect to the database
