@@ -1,93 +1,125 @@
-# import time
-# from adafruit_mcp3xxx.mcp3008 import MCP3008
-# from adafruit_mcp3xxx.analog_in import AnalogIn
-# import busio
-# import digitalio
-# from board import SCK, MISO, MOSI, CE0
-
-# # Create the SPI bus
-# spi = busio.SPI(clock=SCK, MISO=MISO, MOSI=MOSI)
-
-# # Create the chip select
-# cs = digitalio.DigitalInOut(CE0)
-
-# # Create the MCP3008 object
-# mcp = MCP3008(spi, cs)
-
-# # Create an analog input channel for the MQ2 sensor
-# mq2_channel = AnalogIn(mcp, MCP3008.P0)  # Use channel 0 (CH0)
-
-# # Function to calculate approximate gas concentration
-# def calculate_gas_concentration(voltage):
-#     # Customize based on MQ2 datasheet and your setup
-#     ratio = voltage / 3.3  # Assuming 3.3V reference voltage
-#     return ratio * 100  # Scale to percentage or other units as needed
-
-# print("Reading MQ2 sensor...")
-# try:
-#     while True:
-#         # Read the voltage from the MQ2 sensor
-#         voltage = mq2_channel.voltage
-#         gas_concentration = calculate_gas_concentration(voltage)
-        
-#         # Display results
-#         print(f"Voltage: {voltage:.2f} V")
-#         print(f"Gas Concentration: {gas_concentration:.2f}%")
-        
-#         # Wait 1 second before next reading
-#         time.sleep(1)
-
-# except KeyboardInterrupt:
-#     print("\nProgram stopped.")
-
+#!/usr/bin/env python3
 import time
-from adafruit_mcp3xxx.mcp3008 import MCP3008
-from adafruit_mcp3xxx.analog_in import AnalogIn
+import statistics
+import logging
+import board
 import busio
-import digitalio
-from board import SCK, MISO, MOSI, CE0
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 
-# Create the SPI bus
-spi = busio.SPI(clock=SCK, MISO=MISO, MOSI=MOSI)
+# ==========================================
+# **Configuration and Constants**
+# ==========================================
 
-# Create the chip select
-cs = digitalio.DigitalInOut(CE0)
+VCC = 3.3  # Power voltage (adjust to 5V if needed)
+RL = 1.0  # Load resistance in kΩ
 
-# Create the MCP3008 object
-mcp = MCP3008(spi, cs)
+# Ammonia (NH₃) Constants for MQ2
+A = 100  # MQ2 calibration constant from datasheet
+B = -1.5  # Power factor
 
-# Create an analog input channel for the MQ2 sensor
-mq2_channel = AnalogIn(mcp, 0)  # Use channel 0 (CH0)
+LOG_FILE = "mq2_sensor_log.txt"  # File to store logs
+MOVING_AVERAGE_SIZE = 10  # Number of readings for smoothing
 
-# Baseline calibration (update these values based on calibration)
-CLEAN_AIR_VOLTAGE = 0.2  # Voltage in clean air (update after calibration)
-URINE_THRESHOLD_VOLTAGE = 0.5  # Threshold for detecting urine-like gas
+# ==========================================
+# **Logging Configuration**
+# ==========================================
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", handlers=[
+    logging.FileHandler(LOG_FILE),
+    logging.StreamHandler()
+])
 
-def detect_urine(voltage):
-    """
-    Determine if the gas levels suggest the presence of urine.
-    Returns True if above threshold, False otherwise.
-    """
-    if voltage > URINE_THRESHOLD_VOLTAGE:
-        return True
-    return False
+# ==========================================
+# **Initialize the MQ2 Sensor (ADS1115)**
+# ==========================================
 
-print("Starting urine detection...")
+try:
+    i2c = busio.I2C(board.SCL, board.SDA)
+except Exception as e:
+    logging.error("Failed to initialize I2C: " + str(e))
+    exit(1)
+
+try:
+    ads = ADS.ADS1115(i2c)
+    ads.gain = 2/3  # Increased sensitivity
+    mq2_channel = AnalogIn(ads, ADS.P0)
+    logging.info("✅ ADS1115 (MQ2 sensor) initialized.")
+except Exception as e:
+    logging.error("Failed to initialize ADS1115: " + str(e))
+    exit(1)
+
+# ==========================================
+# **Sensor Calibration (Calculate R0)**
+# ==========================================
+def calibrate_r0():
+    """Calibrate MQ2 sensor baseline resistance (R0) in clean air."""
+    readings = []
+    logging.info("🔄 Calibrating MQ2 sensor in clean air... (Wait 10 sec)")
+
+    for _ in range(50):  # Take 50 samples over 10 sec
+        voltage = mq2_channel.voltage
+        rs = calculate_rs(voltage)
+        if rs:
+            readings.append(rs)
+        time.sleep(0.2)
+
+    r0 = statistics.mean(readings)  # Compute average R0
+    logging.info(f"✅ Calibration complete! R0 = {r0:.3f} kΩ")
+    return r0
+
+def calculate_rs(voltage):
+    """Convert MQ2 voltage to Rs (sensor resistance)."""
+    if voltage <= 0:
+        return None  # Avoid division by zero
+    rs = ((VCC / voltage) - 1) * RL  # Rs calculation
+    return rs
+
+def calculate_ppm(voltage, r0):
+    """Convert MQ2 voltage to gas concentration in ppm."""
+    rs = calculate_rs(voltage)
+    if not rs:
+        return None
+
+    ratio = rs / r0  # Rs/R0 ratio
+    ppm = A * (ratio ** B)  # Apply gas equation
+    return ppm
+
+# Perform initial calibration
+R0 = calibrate_r0()
+
+# **Moving Average Buffer**
+recent_readings = []
+
+# ==========================================
+# **Main Sensor Loop (Logs to File)**
+# ==========================================
+logging.info("📡 Starting MQ2 sensor monitoring... Press Ctrl+C to exit.")
+
 try:
     while True:
-        # Read the voltage from the MQ2 sensor
         voltage = mq2_channel.voltage
-        
-        # Determine if urine is detected
-        urine_detected = detect_urine(voltage)
-        
-        if urine_detected:
-            print(f"Urine-like gas detected! Voltage: {voltage:.2f} V")
+        ammonia_ppm = calculate_ppm(voltage, R0)
+
+        # Apply Moving Average Smoothing
+        recent_readings.append(ammonia_ppm)
+        if len(recent_readings) > MOVING_AVERAGE_SIZE:
+            recent_readings.pop(0)
+
+        smoothed_ppm = statistics.mean(recent_readings)
+
+        # **Logging Output**
+        if smoothed_ppm < 5:
+            status = "🟢 Clean Air"
+        elif smoothed_ppm < 50:
+            status = "🟡 Moderate Air Quality"
         else:
-            print(f"No unusual gas detected. Voltage: {voltage:.2f} V")
-        
-        # Wait 1 second before next reading
-        time.sleep(1)
+            status = "🔴 High Ammonia Levels Detected!"
+
+        log_message = f"{status}: {smoothed_ppm:.2f} ppm"
+        logging.info(log_message)
+
+        # Wait before next reading
+        time.sleep(2)
 
 except KeyboardInterrupt:
-    print("\nProgram stopped.")
+    logging.info("🛑 Exiting MQ2 monitoring...")
