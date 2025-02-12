@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 This script reads data from multiple sensors:
-  - MQ2 gas sensor (via ADS1115 on channel A0)
+  - MQ135 air quality sensor (via ADS1115 on channel A0)
   - DHT22 temperature/humidity sensor (GPIO4)
   - A button (GPIO17)
   - An RFID RC522 module (using SimpleMFRC522)
@@ -14,7 +14,6 @@ import time
 import json
 import logging
 import datetime
-import threading
 import statistics
 
 import board
@@ -25,16 +24,14 @@ import adafruit_dht
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
-# Import the SimpleMFRC522 library for RC522 RFID (SPI-based)
-from mfrc522 import SimpleMFRC522
-
+from mfrc522 import SimpleMFRC522  # RFID Reader
 from azure.iot.device import IoTHubDeviceClient, Message
 
 # ==========================================
 # Configuration & Azure IoT Hub Connection
 # ==========================================
 
-IOTHUB_CONNECTION_STRING = "HostName=elevatorCleanlinessDetector.azure-devices.net;DeviceId=ElevatorDetector;SharedAccessKey=lrTZ47/DX3nWRc4kPtILKfqFf22+7+ojF+7L9GpihnY="
+IOTHUB_CONNECTION_STRING = "YOUR_IOT_HUB_CONNECTION_STRING"
 
 STATION = "University of Washington"
 ELEVATOR_NUM = 1
@@ -66,31 +63,31 @@ except Exception as e:
     logger.error("Failed to initialize I2C: " + str(e))
     exit(1)
 
-# (1) ADS1115 for MQ2 sensor (air quality)
+# (1) ADS1115 for MQ-135 sensor (air quality)
 try:
     ads = ADS.ADS1115(i2c)
-    ads.gain = 2  # Increased sensitivity (2/3 for full 6.144V range)
-    mq2_channel = AnalogIn(ads, ADS.P0)
-    logger.info("ADS1115 (MQ2 sensor) initialized.")
+    ads.gain = 1  # Increased sensitivity
+    mq135_channel = AnalogIn(ads, ADS.P0)
+    logger.info("ADS1115 (MQ-135 sensor) initialized.")
 except Exception as e:
     logger.error("Failed to initialize ADS1115: " + str(e))
     exit(1)
 
-# **MQ2 Sensor Constants**
+# **MQ-135 Sensor Constants for NH₃ (Ammonia)**
 VCC = 3.3  # Raspberry Pi power voltage
-RL = 1.0  # Load resistance in kΩ
+RL = 1.0  # Load resistance in kΩ (check datasheet)
 
-A = 100  # MQ2 ammonia calibration constant (from datasheet)
-B = -1.5  # MQ2 ammonia power factor
+A = 116.6020682  # MQ-135 calibration constant
+B = -2.769034857  # Power factor
 
 # **🔹 Step 1: Baseline Calibration (R0 in Clean Air)**
 def calibrate_r0():
-    """Calibrate MQ2 sensor baseline R0 in clean air."""
+    """Calibrate MQ-135 sensor baseline R0 in clean air."""
     readings = []
-    logger.info("Calibrating MQ2 sensor in clean air... (Wait 10 sec)")
+    logger.info("Calibrating MQ-135 sensor in clean air... (Wait 10 sec)")
 
     for _ in range(50):  # Collect 50 samples over 10 sec
-        voltage = mq2_channel.voltage
+        voltage = mq135_channel.voltage
         rs = calculate_rs(voltage)
         if rs:
             readings.append(rs)
@@ -101,14 +98,14 @@ def calibrate_r0():
     return r0
 
 def calculate_rs(voltage):
-    """Convert MQ2 voltage to Rs (sensor resistance)."""
+    """Convert MQ-135 voltage to Rs (sensor resistance)."""
     if voltage <= 0:
         return None  # Avoid division by zero
     rs = ((VCC / voltage) - 1) * RL  # Rs calculation
     return rs
 
 def calculate_ppm(voltage, r0):
-    """Convert MQ2 voltage to gas concentration in ppm."""
+    """Convert MQ-135 voltage to NH₃ concentration in ppm."""
     rs = calculate_rs(voltage)
     if not rs:
         return None
@@ -174,13 +171,13 @@ while True:
             humidity = None
             temperature_c = None
 
-        # --- Read MQ2 Sensor ---
+        # --- Read MQ-135 Sensor ---
         try:
-            mq2_voltage = mq2_channel.voltage
-            ammonia_ppm = calculate_ppm(mq2_voltage, R0)
-            logger.info(f"MQ2 Voltage: {mq2_voltage:.3f}V, Ammonia: {ammonia_ppm:.2f} ppm")
+            mq135_voltage = mq135_channel.voltage
+            ammonia_ppm = calculate_ppm(mq135_voltage, R0)
+            logger.info(f"MQ-135 Voltage: {mq135_voltage:.3f}V, Ammonia: {ammonia_ppm:.2f} ppm")
         except Exception as e:
-            logger.error("MQ2 sensor read error: " + str(e))
+            logger.error("MQ-135 sensor read error: " + str(e))
             ammonia_ppm = None
 
         # --- Read Button ---
@@ -200,10 +197,7 @@ while True:
             "time": datetime.datetime.utcnow().isoformat() + "Z"
         }
 
-        # Send sensor data to Azure IoT Hub.
         send_message_to_iothub(sensor_payload)
-
-        # Polling interval
         time.sleep(5)
 
     except KeyboardInterrupt:
@@ -215,4 +209,3 @@ while True:
 
 device_client.disconnect()
 logger.info("Disconnected from Azure IoT Hub. Bye!")
-

@@ -41,7 +41,7 @@ def get_alerts_by_id(alert_id):
     if conn:
         cursor = conn.cursor()
         query = """
-                SELECT logID, station, elevatorNumber, timeStamp, issue, humidity, infrared, airQuality, passengerReport 
+                SELECT logID, station, elevatorNumber, timeStamp, issue, humidity, airQuality, passengerReport 
                 FROM Elevator_Cleanliness_Logs
                 WHERE logID = ?
                 """
@@ -58,7 +58,6 @@ def get_alerts_by_id(alert_id):
             "time": row.timeStamp,
             "issue": row.issue,
             "humidity": row.humidity,
-            "infrared": row.infrared,
             "airQuality": row.airQuality,
             "passengerReport": bool(row.passengerReport),
         }
@@ -253,8 +252,6 @@ def get_elevator_status():
             ESS.Elevator_Num, 
             ESS.Humidity, 
             ESS.Humidity_Status,
-            ESS.Infrared, 
-            ESS.Infrared_Status,
             ESS.AirQuality, 
             ESS.AirQuality_Status,
             ESS.PassengerButton,
@@ -298,8 +295,6 @@ def get_elevator_status():
             "elevator_num": row.Elevator_Num,
             "humidity": row.Humidity,
             "humidity_status": row.Humidity_Status,
-            "infrared": row.Infrared,
-            "infrared_status": row.Infrared_Status,
             "air_quality": row.AirQuality,
             "air_quality_status": row.AirQuality_Status,
             "passenger_button": bool(row.PassengerButton),
