@@ -375,10 +375,24 @@
   width: 129px;
 }
 
+.active-alerts .name-111 {
+  color: #1b2559;
+  font-family: var(--body-text-medium-bold-font-family);
+  font-size: 20px;
+  font-style: var(--body-text-medium-bold-font-style);
+  font-weight: var(--body-text-medium-bold-font-weight);
+  left: 0;
+  letter-spacing: var(--body-text-medium-bold-letter-spacing);
+  line-height: var(--body-text-medium-bold-line-height);
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
 .active-alerts .name-11 {
   color: #1b2559;
   font-family: var(--body-text-medium-bold-font-family);
-  font-size: var(--body-text-medium-bold-font-size);
+  font-size: var(--body-text-medium-bold-font-family);
   font-style: var(--body-text-medium-bold-font-style);
   font-weight: var(--body-text-medium-bold-font-weight);
   left: 0;
@@ -459,7 +473,7 @@
 
 .active-alerts .overlap-59 {
   height: 86px;
-  left: 0;
+  left: 10px;
   position: absolute;
   top: 31px;
   width: 181px;
@@ -584,7 +598,7 @@
 
 .active-alerts .name-date-8 {
   height: 28px;
-  left: 64px;
+  left: 16px;
   position: absolute;
   top: 9px;
   width: 135px;

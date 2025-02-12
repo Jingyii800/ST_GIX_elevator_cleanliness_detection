@@ -253,15 +253,6 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
                     <div className="div-8">
                       <div className="on-track-9" />
-                      <div
-                        className="on-track-10"
-                        alt="On track"
-                      />
-                      <img
-                        className="group-58"
-                        alt="Group"
-                        src="/img/group-25.png"
-                      />
 
                       <img
                         className="group-53"
@@ -323,47 +314,26 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
                               <div className="name-date-7">
                                 <div className="overlap-group-20">
-                                  <div className="name-11">Infrared Sensor</div>
+                                  <div className="name-11">Air Quality Sensor</div>
 
                                   <p className="date-10">
-                                    Value : {selectedAlert.infrared}
+                                    Value : {selectedAlert.airQuality}
                                   </p>
                                 </div>
-
-                                <div className="date-11">Value : {selectedAlert.airQuality}</div>
                               </div>
                             </div>
 
                             <img
                               className="group-55"
                               alt="Group"
-                              src="/img/group-21.png"
+                              src="/img/vector-51.png"
                             />
                           </div>
 
                           <div className="content-11">
-                            <div className="div-9">
-                              <div className="noun-passenger-2">
-                                <img
-                                  className="element-passanger-2"
-                                  alt="Element passanger"
-                                  src="/img/vector-51.png"
-                                />
-
-                                <div className="overlap-group-21">
-                                  <div className="text-wrapper-130">
-                                    Created by Rian Akbar
-                                  </div>
-
-                                  <div className="text-wrapper-131">
-                                    from the Noun Project
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
 
                             <div className="name-date-8">
-                              <div className="name-11">Air Quality Sensor</div>
+                              <div className="name-111">Sensor Data Reading:</div>
                             </div>
                           </div>
                         </div>

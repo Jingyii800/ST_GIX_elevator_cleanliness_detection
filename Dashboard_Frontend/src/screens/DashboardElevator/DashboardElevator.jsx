@@ -257,32 +257,7 @@ export const DashboardElevator = () => {
                     <img src="/img/on-track.png" alt="Warning" className="status-icon" />
                   )}
                 </div>  
-                </div>    
-
-              <div className="sensor-item">
-              <div className="div-7">
-                        <img
-                        className="group-34"
-                        alt="Group"
-                        src="/img/group-21.png"
-                      />
-                    </div>
-                <div className="sensor-info">
-                  <p className="sensor-name">Infrared Sensor</p>
-                  <p className="sensor-value">Value : {sensorData.infrared}</p>
-                </div>   
-                <div className={`sensor-status ${sensorData.infrared_status === "Good" ? "good" : "warning"}`}>
-                  {sensorData.infrared_status === "Good" ? (
-                    <div className="on-track-6">
-                    <div className="done-instance-wrapper">
-                      <img className="done done-2" alt="Done" src="/img/done-22.png" />
-                    </div>
-                  </div>
-                  ) : (
-                    <img src="/img/on-track.png" alt="Warning" className="status-icon" />
-                  )}
-                </div>      
-                </div>      
+                </div>       
 
                 <div className="sensor-item">
               <div className="div-7">

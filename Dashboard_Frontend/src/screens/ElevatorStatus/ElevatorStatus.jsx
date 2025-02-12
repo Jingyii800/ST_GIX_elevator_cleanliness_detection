@@ -153,7 +153,6 @@ export const ElevatorStatus = () => {
                             <td>{log.station} ,Elevator {log.elevator_num}</td>
                             <td>{log.humidity}, {log.humidity_status}</td>
                             <td>{log.air_quality}, {log.air_quality_status}</td>
-                            <td>{log.infrared}, {log.infrared_status}</td>
                             <td>{log.passenger_button_status}</td>
                             <td>
                               <span className={`status-badge ${log.alert_status == "Normal" ? "resolved" : "in-progress"}`}>
