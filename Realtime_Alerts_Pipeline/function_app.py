@@ -14,7 +14,7 @@ import pyodbc
 app = func.FunctionApp()
 conn_str = os.getenv('SqlConnectionString')
 
-@app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="myeventhub",
+@app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="elevator_clean",
                                connection="EventHubConnectionString") 
 
 def eventhub_trigger(azeventhub: func.EventHubEvent):
@@ -86,8 +86,8 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
             # TODO: Optinal :check abnormal_counts based on Machine Learning from database
             
             # 🟢 Define Status Based on Thresholds
-            humidity_status = "Warning" if humidity > 80 else "Good"
-            air_quality_status = "Warning" if air_quality > 2 else "Good"
+            humidity_status = "Warning" if humidity > 20 else "Good"
+            air_quality_status = "Warning" if air_quality > 150 else "Good"
             passenger_button_status = "Warning" if passenger_button == 1 else "Good"
 
             # 🟡 Count Warnings (if 2+ AND air quality is bad, trigger an alert)
