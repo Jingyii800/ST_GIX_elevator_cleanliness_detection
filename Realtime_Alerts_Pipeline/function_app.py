@@ -10,11 +10,13 @@ import logging
 import azure.functions as func
 import os
 import pyodbc
+import requests
 
 app = func.FunctionApp()
 conn_str = os.getenv('SqlConnectionString')
+WEBSOCKET_SERVER_URL = "http://your-vm-ip:8000/send_alert"
 
-@app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="elevator_clean",
+@app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="elevatorcleanlinessdetect",
                                connection="EventHubConnectionString") 
 
 def eventhub_trigger(azeventhub: func.EventHubEvent):
@@ -65,7 +67,7 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
 
             cursor.execute("""
             UPDATE Elevator_Sensor_Status
-            SET Alert_Status = 'Normal
+            SET Alert_Status = 'Normal'
             WHERE Station = ? AND Elevator_Num = ?""", station, elevator_num)
             logging.info(f"✅ Issue resolved for {station}, Elevator {elevator_num} by {staff} (Duration: {duration} min)")
 
@@ -98,19 +100,23 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
 
                 # 📝 Insert Sensor Data into Elevator_Sensor_Status
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # Round values before inserting into the table
+                humidity = round(humidity, 1)
+                air_quality = round(air_quality, 1)
 
                 # 🚨 Insert Alert if Conditions Met
-                if air_quality_status == "Warning" and warning_count >= 2:
+                if air_quality_status == "Warning" and warning_count >= 1:
                     alert_status = "Active"
 
                     # ✅ Insert New Alert in Logs
                     alert_query = """
                         INSERT INTO Elevator_Cleanliness_Logs 
                         (timeStamp, station, elevatorNumber, Issue, Humidity, AirQuality, PassengerReport)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                     """
                     cursor.execute(alert_query, (timestamp, station, elevator_num, "Liquid", humidity, air_quality, passenger_button))
 
+                    send_alert(station, elevator_num, "Liquid")
                     # ✅ Trigger WebSocket Alert
                     logging.info(f"🚨 Alert Triggered: {station}, Elevator {elevator_num} (Sensor Abnormality)")
 
@@ -130,9 +136,9 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
                             Alert_Status = ?
                     WHEN NOT MATCHED THEN 
                         INSERT (Time, Station, Elevator_Num, Humidity, Humidity_Status, 
-                                Infrared, Infrared_Status, AirQuality, AirQuality_Status, 
+                                 AirQuality, AirQuality_Status, 
                                 PassengerButton, PassengerButton_Status, Alert_Status)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """
                 cursor.execute(sensor_query, 
                     (station, elevator_num, timestamp, humidity, humidity_status, 
@@ -152,8 +158,19 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
         cursor.close()
         conn.close()
 
-def send_alert(station, elevator_num, issue):
-    pass
 
+
+def send_alert(station, elevator_num, issue):
+    """Send an alert message to the WebSocket server."""
+    message = {"station": station, "elevator_num": elevator_num, "issue": issue}
+    
+    try:
+        response = requests.post(WEBSOCKET_SERVER_URL, json=message)
+        if response.status_code == 200:
+            print("✅ Alert sent to WebSocket server successfully!")
+        else:
+            print(f"❌ Failed to send alert: {response.text}")
+    except Exception as e:
+        print(f"❌ Error sending alert: {e}")
 
 

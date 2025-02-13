@@ -1,0 +1,42 @@
+name: Deploy FastAPI WebSocket Server to Azure
+
+on:
+  push:
+    branches:
+      - main  # Change to your branch name if different
+    paths:
+      - 'fastapi-websocket/**'  # Only trigger deployment when changes are made in the fastapi-websocket folder
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: 🔄 Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: 📦 Install Dependencies
+      run: |
+        cd fastapi-websocket
+        pip install -r requirements.txt
+
+    - name: 🔍 Verify FastAPI Code
+      run: |
+        cd fastapi-websocket
+        python -m uvicorn websocket_server:app --host 0.0.0.0 --port 8000 --log-level warning &
+        sleep 5
+        curl -f http://localhost:8000/docs || exit 1
+        pkill -f uvicorn
+
+    - name: 🚀 Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: "fastapi-websocket-app"  # Replace with your Azure App Service name
+        slot-name: "production"
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: "./fastapi-websocket"
