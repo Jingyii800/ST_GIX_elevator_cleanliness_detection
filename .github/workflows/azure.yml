@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dashboard_Backend/**'  # Only trigger deployment when changes are made in the fastapi-websocket folder
   workflow_dispatch:
 
 jobs:

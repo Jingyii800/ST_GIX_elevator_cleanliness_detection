@@ -18,11 +18,13 @@ jobs:
     - name: 🔄 Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.9'
+        python-version: '3.11'
 
     - name: 📦 Install Dependencies
       run: |
         cd fastapi-websocket
+        python -m venv venv
+        source venv/bin/activate
         pip install -r requirements.txt
 
     - name: 🔍 Verify FastAPI Code
