@@ -12,6 +12,7 @@ export const DashboardStation = () => {
   const [elevators, setElevators] = useState([]); // Store fetched elevator data
   const [reportLogs, setReportLogs] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertNum, setAlertNum] = useState(0);
   const [alertMessage, setAlertMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -23,6 +24,23 @@ export const DashboardStation = () => {
     "Columbia City",
     "Bellevue Station",
   ];
+
+  // 🔹 Fetch alerts counts
+  const fetchAlerts = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/alerts`);
+      if (!response.ok) throw new Error("Failed to fetch alerts");
+      
+      const data = await response.json();
+      setAlertNum(data.length)
+    } catch (err) {
+      console.error("Error getting alerts count:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAlerts();
+  }, []);
 
   const fetchElevatorStatus = async () => {
     try {
@@ -374,7 +392,7 @@ export const DashboardStation = () => {
 
               <div className="group-16" />
 
-              <div className="text-wrapper-51">4</div>
+              <div className="text-wrapper-51">{alertNum}</div>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import "./style.css";
 export const DashboardElevator = () => {
   const socketRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertNum, setAlertNum] = useState(0);
   const [alertMessage, setAlertMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false);
   const [reportLogs, setReportLogs] = useState([]);
@@ -19,6 +20,21 @@ export const DashboardElevator = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 🔹 Fetch alerts counts
+  const fetchAlerts = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/alerts`);
+      if (!response.ok) throw new Error("Failed to fetch alerts");
+      
+      const data = await response.json();
+      setAlertNum(data.length)
+    } catch (err) {
+      console.error("Error getting alerts count:", err);
+    }
+  };
+  useEffect(() => {
+    fetchAlerts();
+  }, []);
 
   useEffect(() => {
     const connectWebSocket = () => {
@@ -475,7 +491,7 @@ export const DashboardElevator = () => {
 
               <div className="group-41" />
 
-              <div className="text-wrapper-117">4</div>
+              <div className="text-wrapper-117">{alertNum}</div>
             </div>
           </div>
         </div>
