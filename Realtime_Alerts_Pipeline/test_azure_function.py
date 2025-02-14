@@ -2,7 +2,7 @@ from azure.eventhub import EventHubProducerClient, EventData
 import json
 
 # Replace with your actual Event Hub details
-EVENT_HUB_CONNECTION_STRING = "Endpoint=sb://elevatorcleanliness.servicebus.windows.net/;SharedAccessKeyName=RootAccessManage;SharedAccessKey=rTCDEsRIZQJ7uor3cwcC/KLo9tNMLfCUB+AEhFPTx/k=;EntityPath=elevator_clean"
+EVENT_HUB_CONNECTION_STRING = ""
 EVENT_HUB_NAME = "elevator_clean"
 
 def send_test_message():

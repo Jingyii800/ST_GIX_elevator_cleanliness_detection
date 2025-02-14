@@ -2,7 +2,7 @@ from azure.iot.device import IoTHubDeviceClient, Message
 import json
 
 # Replace with your IoT device connection string from IoT Hub (NOT Event Hub)
-DEVICE_CONNECTION_STRING = "HostName=elevatorCleanlinessDetector.azure-devices.net;DeviceId=ElevatorDetector;SharedAccessKey=lrTZ47/DX3nWRc4kPtILKfqFf22+7+ojF+7L9GpihnY="
+DEVICE_CONNECTION_STRING = ""
 
 def send_test_message():
     """Send a test message to IoT Hub (which will route it to Event Hub and trigger Azure Function)."""
