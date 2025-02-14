@@ -3,13 +3,14 @@ import requests
 WEBSOCKET_SERVER_URL = "https://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/send_alert"
 def send_alert(station, elevator_num, issue):
     """Send an alert message to the WebSocket server."""
+    headers = {"Content-Type": "application/json"}  # ✅ Explicitly set JSON headers
     message = {
         "station": station,
         "elevator_num": elevator_num,
         "issue": issue
     }
 
-    response = requests.post(WEBSOCKET_SERVER_URL, json=message)
+    response = requests.post(WEBSOCKET_SERVER_URL, json=message, headers=headers)
     
     if response.status_code == 200:
         print("✅ Alert sent to WebSocket server successfully!")

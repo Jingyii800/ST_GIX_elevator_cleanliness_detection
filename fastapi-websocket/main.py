@@ -23,7 +23,7 @@ async def websocket_endpoint(websocket: WebSocket):
         clients.remove(websocket)
 
 @app.post("/send_alert")
-async def send_alert(station: str, elevator_num: int, issue: str):
+async def send_alert(alert):
     """ API endpoint for Azure Function to send an alert """
     message = f"🚨 New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
 
