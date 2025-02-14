@@ -1,7 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
 name: Build and deploy Python app to Azure Web App - fastapi-websocket-app
 
 on:
@@ -14,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # Required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -25,18 +21,20 @@ jobs:
           python-version: '3.11'
 
       - name: Create and start virtual environment
+        working-directory: ./fastapi-websocket  # Set correct working directory
         run: |
-          cd fastapi-websocket
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
+        working-directory: ./fastapi-websocket  # Ensure it runs in correct folder
         run: pip install -r requirements.txt
         
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # Optional: Run tests here
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        working-directory: ./fastapi-websocket  # Zip only the required files
+        run: zip -r ../release.zip ./*
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -53,8 +51,8 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write # Required for JWT
+      contents: read  # Required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -65,13 +63,12 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E12E7FDE9FF74E64B099A995EC7E6A5F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C7EB368E3A894292925E0FEB3930DB80 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A91FFB9298314F56B70854E542DA1D3D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -79,4 +76,5 @@ jobs:
         with:
           app-name: 'fastapi-websocket-app'
           slot-name: 'Production'
+
           
