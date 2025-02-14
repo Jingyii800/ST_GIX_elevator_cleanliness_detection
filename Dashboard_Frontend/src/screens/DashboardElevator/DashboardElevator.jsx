@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link , useParams} from "react-router-dom";
 import API_BASE_URL from "../../config";
 import { ActiveAlerts } from "../ActiveAlerts/ActiveAlerts";
@@ -7,7 +7,7 @@ import "./style.css";
 
 export const DashboardElevator = () => {
   const socketRef = useRef(null);
-  const [showAlert, setShowAlert] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false);
   const [reportLogs, setReportLogs] = useState([]);
@@ -21,42 +21,45 @@ export const DashboardElevator = () => {
 
 
   useEffect(() => {
-    const socket = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+    const connectWebSocket = () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Close previous instance before reconnecting
+      }
 
-    socket.onopen = () => {
-      console.log("✅ WebSocket connection established!");
+      const ws = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+      socketRef.current = ws; // ✅ Store WebSocket instance
+
+      ws.onopen = () => {
+        console.log("✅ WebSocket connection established!");
+      };
+
+      ws.onmessage = (event) => {
+        console.log("🚨 Alert received:", event.data);
+
+        // ✅ Only update alert message container without affecting page state
+        setAlertMessage(event.data);
+        setShowAlert(true);
+      };
+
+      ws.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+      };
+
+      ws.onclose = () => {
+        console.warn("⚠️ WebSocket connection closed! Reconnecting...");
+        socketRef.current = null; // ✅ Prevents old WebSocket instance reuse
+        setTimeout(() => connectWebSocket(), 5000); // ✅ Correct reconnection logic
+      };
     };
 
-    socket.onmessage = (event) => {
-      console.log("🚨 Alert received:", event.data);
-      const alertData = event.data;
+    connectWebSocket(); // ✅ Initial connection
 
-      // Extract alert message dynamically
-      setAlertMessage(alertData);
-      setShowAlert(true);
-      
-      // Extract station name if available in the message
-      const match = alertData.match(/at (.+?) Elevator/);
-      if (match) setStationName(match[1]);
-
-      // Auto-hide the alert after 5 seconds
-      setTimeout(() => setShowAlert(false), 5000);
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Cleanup WebSocket on component unmount
+      }
     };
-
-    socket.onerror = (error) => {
-      console.error("❌ WebSocket error:", error);
-    };
-
-    socket.onclose = () => {
-      console.warn("⚠️ WebSocket connection closed! Reconnecting...");
-      setTimeout(() => {
-        socket = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
-      }, 5000); // Try to reconnect in 5 seconds
-    };
-
-    return () => socket.close(); // Cleanup on component unmount
-  }, []);
-
+  }, []); // ✅ Runs only once at mount
 
   const fetchElevatorData = async () => {
     try {
@@ -116,12 +119,10 @@ export const DashboardElevator = () => {
 
       ws.onmessage = (event) => {
         console.log("🚨 Alert received:", event.data);
+
+        // ✅ Only update alert message container without affecting page state
         setAlertMessage(event.data);
         setShowAlert(true);
-
-        // Extract station name if available in the message
-        const match = event.data.match(/at (.+?) Elevator/);
-        if (match) setStationName(match[1]);
 
         // Auto-hide alert after 5 seconds
         setTimeout(() => setShowAlert(false), 5000);
@@ -134,7 +135,6 @@ export const DashboardElevator = () => {
       ws.onclose = () => {
         console.warn("⚠️ WebSocket connection closed! Reconnecting...");
         socketRef.current = null; // ✅ Prevents old WebSocket instance reuse
-        setTimeout(() => connectWebSocket(), 5000); // ✅ Correct reconnection logic
       };
     };
 

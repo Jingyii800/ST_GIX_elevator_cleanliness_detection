@@ -35,7 +35,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/send_alert")
 async def send_alert(alert: Alert = Body(...)): 
     """ API endpoint for Azure Function to send an alert """
-    message = f"🚨 New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
+    message = f"New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
 
     # Send message to all connected WebSocket clients
     # ✅ Send message to all connected WebSocket clients
@@ -46,4 +46,4 @@ async def send_alert(alert: Alert = Body(...)):
     return {"status": "Alert sent", "message": message}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

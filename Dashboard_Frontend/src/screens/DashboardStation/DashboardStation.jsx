@@ -89,15 +89,10 @@ export const DashboardStation = () => {
 
       ws.onmessage = (event) => {
         console.log("🚨 Alert received:", event.data);
+
+        // ✅ Only update alert message container without affecting page state
         setAlertMessage(event.data);
         setShowAlert(true);
-
-        // Extract station name if available in the message
-        const match = event.data.match(/at (.+?) Elevator/);
-        if (match) setStationName(match[1]);
-
-        // Auto-hide alert after 5 seconds
-        setTimeout(() => setShowAlert(false), 5000);
       };
 
       ws.onerror = (error) => {
