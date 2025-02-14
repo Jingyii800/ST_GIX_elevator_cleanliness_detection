@@ -46,4 +46,4 @@ async def send_alert(alert: Alert = Body(...)):
     return {"status": "Alert sent", "message": message}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
