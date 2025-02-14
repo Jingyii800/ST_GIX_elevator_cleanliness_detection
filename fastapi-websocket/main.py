@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, Body
 import uvicorn
 from pydantic import BaseModel
 
@@ -23,7 +23,7 @@ async def websocket_endpoint(websocket: WebSocket):
         clients.remove(websocket)
 
 @app.post("/send_alert")
-async def send_alert(alert):
+async def send_alert(alert: Alert = Body(...)): 
     """ API endpoint for Azure Function to send an alert """
     message = f"🚨 New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
 
