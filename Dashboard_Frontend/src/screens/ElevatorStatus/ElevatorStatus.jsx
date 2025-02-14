@@ -9,11 +9,29 @@ export const ElevatorStatus = () => {
   const [station, setStation] = useState(""); // Selected station
   const [elevator, setElevator] = useState(""); // Selected elevator number
   const [logs, setLogs] = useState([]); // Logs from API
+  const [alertNum, setAlertNum] = useState(0);
   const [loading, setLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error handling
   const [modalOpen, setModalOpen] = useState(false);
 
   const [currentTime, setCurrentTime] = useState("");
+  
+  // 🔹 Fetch alerts counts
+  const fetchAlerts = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/alerts`);
+      if (!response.ok) throw new Error("Failed to fetch alerts");
+      
+      const data = await response.json();
+      setAlertNum(data.length)
+    } catch (err) {
+      console.error("Error getting alerts count:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAlerts();
+  }, []);
 
   useEffect(() => {
     const updateCurrentTime = () => {
@@ -172,7 +190,7 @@ export const ElevatorStatus = () => {
 
                 <div className="group-5" />
 
-                <div className="text-wrapper-25">4</div>
+                <div className="text-wrapper-25">{alertNum}</div>
               </div>
             </div>
           </div>

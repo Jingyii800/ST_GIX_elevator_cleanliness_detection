@@ -8,6 +8,7 @@ import "./style.css";
 export const ReportLogs = () => {
   const [timeFilter, setTimeFilter] = useState("daily"); // Default to daily
   const [station, setStation] = useState(""); // Selected station
+  const [alertNum, setAlertNum] = useState(0);
   const [elevator, setElevator] = useState(""); // Selected elevator number
   const [logs, setLogs] = useState([]); // Logs from API
   const [loading, setLoading] = useState(false); // Loading state
@@ -17,6 +18,22 @@ export const ReportLogs = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  // 🔹 Fetch alerts counts
+  const fetchAlerts = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/alerts`);
+      if (!response.ok) throw new Error("Failed to fetch alerts");
+      
+      const data = await response.json();
+      setAlertNum(data.length)
+    } catch (err) {
+      console.error("Error getting alerts count:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAlerts();
+  }, []);
 
   // 🔹 Fetch report logs based on filters
   const fetchReportLogs = async () => {
@@ -197,7 +214,7 @@ export const ReportLogs = () => {
 
                 <div className="group-5" />
 
-                <div className="text-wrapper-25">4</div>
+                <div className="text-wrapper-25">{alertNum}</div>
               </div>
             </div>
           </div>
