@@ -19,4 +19,4 @@ def send_alert(station, elevator_num, issue):
         print(f"❌ Failed to send alert: {response.status_code} - {response.text}")
 
 if __name__ == "__main__":
-    send_alert("ABC", 1, "Liquid")
+    send_alert("University of Washington", 1, "Liquid")
