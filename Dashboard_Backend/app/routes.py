@@ -122,7 +122,7 @@ def mark_false_alarm(alert_id):
         # ✅ Mark False Alert in Logs
         query_update_log = """
             UPDATE Elevator_Cleanliness_Logs 
-            SET falseAlert = 1, confirmed = 1
+            SET falseAlert = 1, confirmed = 1, resolved = 1
             WHERE logID = ?
         """
         cursor.execute(query_update_log, (alert_id,))

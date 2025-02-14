@@ -14,7 +14,6 @@ import requests
 
 app = func.FunctionApp()
 conn_str = os.getenv('SqlConnectionString')
-WEBSOCKET_SERVER_URL = "https://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/send_alert"
 
 @app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="elevatorcleanlinessdetect",
                                connection="EventHubConnectionString") 
@@ -60,7 +59,7 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
             # update in SQL Logs database: marked as True, staff: John, Resolved Time:xxx, Duration
             update_query = """
             UPDATE Elevator_Cleanliness_Logs 
-            SET resolved = 1, resolvedBy = ?, resolveTime = ?, duration = ? 
+            SET resolved = 1, resolvedBy = ?, resolvedTime = ?, duration = ? 
             WHERE logID = ?
             """
             cursor.execute(update_query, staff, resolved_time, duration, logID)
@@ -168,7 +167,7 @@ def send_alert(station, elevator_num, issue):
         "elevator_num": elevator_num,
         "issue": issue
     }
-
+    WEBSOCKET_SERVER_URL = "https://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/send_alert"
     response = requests.post(WEBSOCKET_SERVER_URL, json=message, headers=headers)
     
     if response.status_code == 200:
