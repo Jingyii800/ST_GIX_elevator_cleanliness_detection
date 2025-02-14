@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Sidebar } from "../../components/sidebar";
 import API_BASE_URL from "../../config";
@@ -7,11 +7,12 @@ import "./style.css";
 
 
 export const DashboardStation = () => {
-
+  const socketRef = useRef(null);
   const [stationName, setStationName] = useState("University of Washington"); // Default Station
   const [elevators, setElevators] = useState([]); // Store fetched elevator data
   const [reportLogs, setReportLogs] = useState([]);
-  const [showAlert, setShowAlert] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false);
 
   const stationOptions = [
@@ -74,10 +75,50 @@ export const DashboardStation = () => {
 
 
   useEffect(() => {
-    // Auto-hide the alert after 10 seconds
-    const timer = setTimeout(() => setShowAlert(false), 100000);
-    return () => clearTimeout(timer);
-  }, []);
+    const connectWebSocket = () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Close previous instance before reconnecting
+      }
+
+      const ws = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+      socketRef.current = ws; // ✅ Store WebSocket instance
+
+      ws.onopen = () => {
+        console.log("✅ WebSocket connection established!");
+      };
+
+      ws.onmessage = (event) => {
+        console.log("🚨 Alert received:", event.data);
+        setAlertMessage(event.data);
+        setShowAlert(true);
+
+        // Extract station name if available in the message
+        const match = event.data.match(/at (.+?) Elevator/);
+        if (match) setStationName(match[1]);
+
+        // Auto-hide alert after 5 seconds
+        setTimeout(() => setShowAlert(false), 5000);
+      };
+
+      ws.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+      };
+
+      ws.onclose = () => {
+        console.warn("⚠️ WebSocket connection closed! Reconnecting...");
+        socketRef.current = null; // ✅ Prevents old WebSocket instance reuse
+        setTimeout(() => connectWebSocket(), 5000); // ✅ Correct reconnection logic
+      };
+    };
+
+    connectWebSocket(); // ✅ Initial connection
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Cleanup WebSocket on component unmount
+      }
+    };
+  }, []); // ✅ Runs only once at mount
 
   return (
     <div className="dashboard-station">
@@ -315,7 +356,7 @@ export const DashboardStation = () => {
             <div className="overlap-14" onClick={() => setModalOpen(true)}>
             <div className="rectangle-17" />
             <p className="new-cleanliness">
-              New Cleanliness Alert at {stationName} Elevator 3: Liquid Waste!
+              {alertMessage}
             </p>
             <img
               className="group-14"

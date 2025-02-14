@@ -20,9 +20,40 @@ export const DashboardElevator = () => {
 
 
   useEffect(() => {
-      // Auto-hide the alert after 10 seconds
-      const timer = setTimeout(() => setShowAlert(false), 100000);
-      return () => clearTimeout(timer);
+    const socket = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket connection established!");
+    };
+
+    socket.onmessage = (event) => {
+      console.log("🚨 Alert received:", event.data);
+      const alertData = event.data;
+
+      // Extract alert message dynamically
+      setAlertMessage(alertData);
+      setShowAlert(true);
+      
+      // Extract station name if available in the message
+      const match = alertData.match(/at (.+?) Elevator/);
+      if (match) setStationName(match[1]);
+
+      // Auto-hide the alert after 5 seconds
+      setTimeout(() => setShowAlert(false), 5000);
+    };
+
+    socket.onerror = (error) => {
+      console.error("❌ WebSocket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.warn("⚠️ WebSocket connection closed! Reconnecting...");
+      setTimeout(() => {
+        socket = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+      }, 5000); // Try to reconnect in 5 seconds
+    };
+
+    return () => socket.close(); // Cleanup on component unmount
   }, []);
 
 

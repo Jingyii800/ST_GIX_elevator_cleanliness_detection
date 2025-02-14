@@ -14,7 +14,7 @@ import requests
 
 app = func.FunctionApp()
 conn_str = os.getenv('SqlConnectionString')
-WEBSOCKET_SERVER_URL = "http://your-vm-ip:8000/send_alert"
+WEBSOCKET_SERVER_URL = "https://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/send_alert"
 
 @app.event_hub_message_trigger(arg_name="azeventhub", event_hub_name="elevatorcleanlinessdetect",
                                connection="EventHubConnectionString") 
