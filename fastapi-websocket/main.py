@@ -1,10 +1,15 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
+from pydantic import BaseModel
 
 app = FastAPI()
 
 # Store active WebSocket connections
 clients = []
+class Alert(BaseModel):
+    station: str
+    elevator_num: int
+    issue: str
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -20,7 +25,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/send_alert")
 async def send_alert(station: str, elevator_num: int, issue: str):
     """ API endpoint for Azure Function to send an alert """
-    message = f"🚨 New Cleanliness Alert at {station} Station, Elevator {elevator_num} - {issue} Waste!"
+    message = f"🚨 New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
 
     # Send message to all connected WebSocket clients
     for client in clients:

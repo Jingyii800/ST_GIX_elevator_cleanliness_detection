@@ -6,8 +6,9 @@ import { Sidebar } from "../../components/sidebar";
 import "./style.css";
 
 export const DashboardElevator = () => {
-
+  const socketRef = useRef(null);
   const [showAlert, setShowAlert] = useState(true);
+  const [alertMessage, setAlertMessage] = useState("")
   const [modalOpen, setModalOpen] = useState(false);
   const [reportLogs, setReportLogs] = useState([]);
   const { stationName, elevatorId } = useParams(); // ✅ Extract URL parameters
@@ -99,6 +100,52 @@ export const DashboardElevator = () => {
       console.error("Error fetching report logs:", error);
     }
   };
+
+  useEffect(() => {
+    const connectWebSocket = () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Close previous instance before reconnecting
+      }
+
+      const ws = new WebSocket("wss://fastapi-websocket-app-fdh0bnc8ffgtdecu.westus-01.azurewebsites.net/ws");
+      socketRef.current = ws; // ✅ Store WebSocket instance
+
+      ws.onopen = () => {
+        console.log("✅ WebSocket connection established!");
+      };
+
+      ws.onmessage = (event) => {
+        console.log("🚨 Alert received:", event.data);
+        setAlertMessage(event.data);
+        setShowAlert(true);
+
+        // Extract station name if available in the message
+        const match = event.data.match(/at (.+?) Elevator/);
+        if (match) setStationName(match[1]);
+
+        // Auto-hide alert after 5 seconds
+        setTimeout(() => setShowAlert(false), 5000);
+      };
+
+      ws.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+      };
+
+      ws.onclose = () => {
+        console.warn("⚠️ WebSocket connection closed! Reconnecting...");
+        socketRef.current = null; // ✅ Prevents old WebSocket instance reuse
+        setTimeout(() => connectWebSocket(), 5000); // ✅ Correct reconnection logic
+      };
+    };
+
+    connectWebSocket(); // ✅ Initial connection
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close(); // ✅ Cleanup WebSocket on component unmount
+      }
+    };
+  }, []); // ✅ Runs only once at mount
 
 
   useEffect(() => {
@@ -406,7 +453,7 @@ export const DashboardElevator = () => {
             <div className="overlap-14" onClick={() => setModalOpen(true)}>
             <div className="rectangle-17" />
             <p className="new-cleanliness">
-              New Cleanliness Alert at {stationName} Elevator 3: Liquid Waste!
+              {alertMessage}
             </p>
             <img
               className="group-14"
