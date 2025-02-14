@@ -1,11 +1,16 @@
-from fastapi import FastAPI, WebSocket, Body
+import logging
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Body
 import uvicorn
 from pydantic import BaseModel
 
 app = FastAPI()
 
+# Enable logging
+logging.basicConfig(level=logging.INFO)
+
 # Store active WebSocket connections
 clients = []
+
 class Alert(BaseModel):
     station: str
     elevator_num: int
@@ -16,11 +21,16 @@ async def websocket_endpoint(websocket: WebSocket):
     """ WebSocket connection handler """
     await websocket.accept()
     clients.append(websocket)
+    logging.info(f"✅ WebSocket connected: {websocket.client}")
+
     try:
         while True:
-            await websocket.receive_text()  # Keep connection alive
-    except:
+            data = await websocket.receive_text()
+            logging.info(f"📩 Received message: {data}")
+            await websocket.send_text(f"Echo: {data}")  # ✅ Send back confirmation
+    except WebSocketDisconnect:
         clients.remove(websocket)
+        logging.warning("❌ WebSocket disconnected.")
 
 @app.post("/send_alert")
 async def send_alert(alert: Alert = Body(...)): 
@@ -28,8 +38,10 @@ async def send_alert(alert: Alert = Body(...)):
     message = f"🚨 New Cleanliness Alert at {alert.station} Station, Elevator {alert.elevator_num} - {alert.issue} Waste!"
 
     # Send message to all connected WebSocket clients
+    # ✅ Send message to all connected WebSocket clients
     for client in clients:
         await client.send_text(message)
+        logging.info(f"📤 Sent alert to WebSocket: {message}")  # ✅ Log message send
 
     return {"status": "Alert sent", "message": message}
 
