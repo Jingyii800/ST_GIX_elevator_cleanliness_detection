@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 BUTTON_PIN = 22  # 你的按钮 GPIO
-LED_PIN = 18     # 你的 LED GPIO
+LED_PIN = 23     # 你的 LED GPIO
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # 按钮默认上拉
