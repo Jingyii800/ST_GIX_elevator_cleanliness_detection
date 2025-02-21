@@ -208,6 +208,23 @@ while True:
             led_on = False
             logger.info("LED Auto Off")
 
+        # RFID Logic
+        try:
+            rfid_id, staff = rfid_reader.read()
+            resolved_time = datetime.datetime.utcnow().isoformat() + "Z"
+            logger.info(f"RFID Card Detected: ID={rfid_id}, Staff={staff}")
+            
+            # Prepare RFID Payload
+            rfid_payload = {
+                "station": STATION,
+                "elevator_num": ELEVATOR_NUM,
+                "resolved_time": resolved_time,
+                "staff": staff
+            }
+            send_message_to_iothub(rfid_payload)
+        except Exception as e:
+            logger.error("RFID Read Error: " + str(e))
+
         # --- Prepare Sensor Data Payload ---
         sensor_payload = {
             "station": STATION,
