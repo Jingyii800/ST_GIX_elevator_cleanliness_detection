@@ -20,6 +20,7 @@ import statistics
 import board
 import busio
 import digitalio
+import screen  # Import screen display functions
 
 import adafruit_dht
 import adafruit_ads1x15.ads1115 as ADS
@@ -133,7 +134,9 @@ LED_PIN = 23  # LED GPIO
 led_on = False
 last_press_time = 0
 confirm_report = False
-button_pressed_state = 0
+button_state = 0
+button_val = 0  # 0: Default screen, 1: Confirm screen, 2: Reported screen
+screen.show_default()  # Start with default display
 
 try:
     GPIO.setmode(GPIO.BCM)
@@ -193,12 +196,13 @@ while True:
         if GPIO.input(BUTTON_PIN) == GPIO.LOW:
             time.sleep(0.1)  # Debounce
             if GPIO.input(BUTTON_PIN) == GPIO.LOW:
-                if not confirm_report:
-                    logger.info("Confirm Report")
-                    confirm_report = True
-                else:
+                if button_state == 0:
+                    screen.show_confirm()
+                    button_state = 1
+                elif button_state == 1:
+                    screen.show_reported()
                     button_val = 1
-                    confirm_report = False
+                    button_state = 2
                     logger.info("Button Pressed")
                 time.sleep(0.5)
 
