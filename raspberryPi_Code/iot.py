@@ -14,6 +14,7 @@ import time
 import json
 import logging
 import datetime
+import RPi.GPIO as GPIO
 import statistics
 
 import board
@@ -126,11 +127,19 @@ except Exception as e:
     exit(1)
 
 # (3) Button on GPIO17
+BUTTON_PIN = 22  # Button GPIO
+LED_PIN = 23  # LED GPIO
+
+led_on = False
+last_press_time = 0
+confirm_report = False
+button_pressed_state = 0
+
 try:
-    button = digitalio.DigitalInOut(board.D17)
-    button.direction = digitalio.Direction.INPUT
-    button.pull = digitalio.Pull.UP
-    logger.info("Button initialized on GPIO17.")
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(LED_PIN, GPIO.OUT)
+    logger.info("Button initialized on GPIO22.")
 except Exception as e:
     logger.error("Failed to initialize button: " + str(e))
     exit(1)
@@ -181,8 +190,23 @@ while True:
             ammonia_ppm = None
 
         # --- Read Button ---
-        button_pressed = not button.value
-        button_val = 1 if button_pressed else 0
+        if GPIO.input(BUTTON_PIN) == GPIO.LOW:
+            time.sleep(0.1)  # Debounce
+            if GPIO.input(BUTTON_PIN) == GPIO.LOW:
+                if not confirm_report:
+                    logger.info("Confirm Report")
+                    confirm_report = True
+                else:
+                    button_val = 1
+                    confirm_report = False
+                    logger.info("Button Pressed")
+                time.sleep(0.5)
+
+        # Check auto-off LED after 5 seconds
+        if led_on and (time.time() - last_press_time > 5):
+            GPIO.output(LED_PIN, GPIO.LOW)
+            led_on = False
+            logger.info("LED Auto Off")
 
         # --- Prepare Sensor Data Payload ---
         sensor_payload = {
