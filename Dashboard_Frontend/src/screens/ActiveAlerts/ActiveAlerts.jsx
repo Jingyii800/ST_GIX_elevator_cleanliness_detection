@@ -88,6 +88,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
       });
 
       setSelectedAlert({ ...data, time: formattedTime });
+      console.log(selectedAlert)
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -294,7 +295,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
                                 </div>
 
                                 <p className="date-10">
-                                Report：{selectedAlert.passenger_button ? "on" : "off"}
+                                Report：{selectedAlert.passenger_button == 1 ? "on" : "off"}
                                 </p>
                               </div>
                             </div>
