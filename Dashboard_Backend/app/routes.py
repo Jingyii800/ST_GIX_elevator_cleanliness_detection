@@ -1,6 +1,10 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for
+
+from app.send_emails import send_email
 from .database import get_db_connection
+from flask import render_template_string
+import os
 
 bp = Blueprint('main', __name__)
 
@@ -159,9 +163,40 @@ def confirm_alert(alert_id):
     query = "UPDATE Elevator_Cleanliness_Logs SET confirmed = 1 WHERE logID = ?"
     cursor.execute(query, (alert_id,))
     conn.commit()
+
+    # Fetch elevator details
+    cursor.execute("SELECT station, elevatorNumber FROM Elevator_Cleanliness_Logs WHERE logID = ?", (alert_id,))
+    alert_data = cursor.fetchone()
     conn.close()
 
-    return jsonify({"message": f"Alert {alert_id} confirmed."}), 200
+    if not alert_data:
+        return jsonify({"error": "No valid alert found"}), 500
+
+    station, elevator_num = alert_data
+
+    # Fixed test email address
+    test_email = "jingyj11@uw.edu"
+
+    # Generate button link
+    confirm_cleaning_url = request.url_root + url_for('main.confirm_cleaning', alert_id=alert_id)
+
+    # Load HTML template
+    template_path = os.path.join(os.path.dirname(__file__), 'templates/email_alerts_template.html')
+    with open(template_path, 'r') as f:
+        email_template = f.read()
+
+    # Render email with dynamic values
+    email_content = render_template_string(
+        email_template,
+        station=station,
+        elevator_num=elevator_num,
+        confirm_cleaning_url=confirm_cleaning_url
+    )
+
+    # Send email (fixed test email)
+    send_email(test_email, "Elevator Cleanliness Alert - Test", email_content)
+
+    return jsonify({"message": "Alert confirmed and test email sent"}), 200
 
 # Display Report Logs
 @bp.route('/report_logs', methods=['GET'])
@@ -304,3 +339,65 @@ def get_elevator_status():
         })
 
     return jsonify(sensor_data), 200
+
+from flask import request
+import logging
+from datetime import datetime
+
+@bp.route('/alerts/<int:alert_id>/confirm_cleaning', methods=['PUT'])
+def confirm_cleaning(alert_id):
+    """Endpoint for staff to mark cleaning as completed based on alert_id."""
+    data = request.get_json()
+    staff = data.get("staff", "Unknown")
+
+    try:
+        resolved_time = datetime.strptime(data.get("resolved_time"), "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)"}), 400
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor()
+
+    # Get station and elevator number using alert_id
+    query = """
+        SELECT station, elevatorNumber, timeStamp 
+        FROM Elevator_Cleanliness_Logs 
+        WHERE logID = ? AND confirmed = 1 AND resolved = 0
+    """
+    cursor.execute(query, (alert_id,))
+    alert_data = cursor.fetchone()
+
+    if not alert_data:
+        logging.warning(f"No unresolved report found for alert ID {alert_id}")
+        return jsonify({"error": f"No unresolved report found for alert ID {alert_id}"}), 404
+
+    station, elevator_num, reported_time = alert_data
+
+    # Calculate duration in minutes
+    duration = (resolved_time - reported_time).total_seconds() // 60
+
+    # Update Elevator_Cleanliness_Logs database
+    update_query = """
+        UPDATE Elevator_Cleanliness_Logs 
+        SET resolved = 1, resolvedBy = ?, resolvedTime = ?, duration = ? 
+        WHERE logID = ?
+    """
+    cursor.execute(update_query, (staff, resolved_time, duration, alert_id))
+
+    # Update Elevator_Sensor_Status to 'Normal'
+    sensor_status_query = """
+        UPDATE Elevator_Sensor_Status
+        SET Alert_Status = 'Normal'
+        WHERE Station = ? AND Elevator_Num = ?
+    """
+    cursor.execute(sensor_status_query, (station, elevator_num))
+
+    conn.commit()
+    conn.close()
+
+    logging.info(f"✅ Issue resolved for {station}, Elevator {elevator_num} by {staff} (Duration: {duration} min)")
+
+    return jsonify({"message": "Cleaning marked as completed", "alert_id": alert_id, "station": station, "elevator_num": elevator_num, "duration": duration}), 200

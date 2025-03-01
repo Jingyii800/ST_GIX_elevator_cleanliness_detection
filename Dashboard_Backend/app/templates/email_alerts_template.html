@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elevator Cleanliness Alert</title>
+</head>
+<body style="font-family: Arial, sans-serif;">
+    <h2>Elevator Cleanliness Issue Reported</h2>
+    <p>Dear Staff,</p>
+    <p>An elevator cleanliness issue has been reported at <strong>{{ station }}</strong>, Elevator <strong>{{ elevator_num }}</strong>.</p>
+    
+    <p>Please attend to this issue !</p>
+
+    <p>Please confirm resolution by clicking the button below:</p>
+    
+    <a href="{{ confirm_cleaning_url }}" 
+       style="display:inline-block;padding:10px 20px;font-size:16px;color:#fff;background-color:#28a745;text-decoration:none;border-radius:5px;">
+       Mark as Cleaned
+    </a>
+    
+    <p>Thank you for your prompt response.</p>
+    
+    <p>Best regards,<br>Sound Transit Elevator Management Team</p>
+</body>
+</html>
