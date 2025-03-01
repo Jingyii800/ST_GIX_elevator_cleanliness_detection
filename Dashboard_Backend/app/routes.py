@@ -175,7 +175,7 @@ def confirm_alert(alert_id):
     station, elevator_num = alert_data
 
     # Fixed test email address
-    test_email = "jingyj11@uw.edu"
+    test_email = "jiajj052@outlook.com"
 
     # Generate button link
     confirm_cleaning_url = request.url_root + url_for('main.confirm_cleaning', alert_id=alert_id)
@@ -194,7 +194,7 @@ def confirm_alert(alert_id):
     )
 
     # Send email (fixed test email)
-    send_email(test_email, "Elevator Cleanliness Alert - Test", email_content)
+    send_email(test_email, "Elevator Cleanliness Alert", email_content)
 
     return jsonify({"message": "Alert confirmed and test email sent"}), 200
 
@@ -344,7 +344,7 @@ from flask import request
 import logging
 from datetime import datetime
 
-@bp.route('/alerts/<int:alert_id>/confirm_cleaning', methods=['PUT'])
+@bp.route('/alerts/<int:alert_id>/confirm_cleaning', methods=['PUT','POST'])
 def confirm_cleaning(alert_id):
     """Endpoint for staff to mark cleaning as completed based on alert_id."""
     data = request.get_json()
