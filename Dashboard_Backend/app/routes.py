@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 from flask import Blueprint, jsonify, request, url_for
 
 from app.send_emails import send_email
@@ -175,7 +176,7 @@ def confirm_alert(alert_id):
     station, elevator_num = alert_data
 
     # Fixed test email address
-    test_email = "jiajj052@outlook.com"
+    test_email = "jingyj11@uw.edu"
 
     # Generate button link
     confirm_cleaning_url = request.url_root + url_for('main.confirm_cleaning', alert_id=alert_id)
@@ -344,14 +345,12 @@ from flask import request
 import logging
 from datetime import datetime
 
-@bp.route('/alerts/<int:alert_id>/confirm_cleaning', methods=['PUT','POST'])
+@bp.route('/alerts/<int:alert_id>/confirm_cleaning', methods=['GET'])
 def confirm_cleaning(alert_id):
     """Endpoint for staff to mark cleaning as completed based on alert_id."""
-    data = request.get_json()
-    staff = data.get("staff", "Unknown")
 
     try:
-        resolved_time = datetime.strptime(data.get("resolved_time"), "%Y-%m-%dT%H:%M:%S")
+        resolved_time = datetime.now()
     except ValueError:
         return jsonify({"error": "Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)"}), 400
 
@@ -378,6 +377,7 @@ def confirm_cleaning(alert_id):
 
     # Calculate duration in minutes
     duration = (resolved_time - reported_time).total_seconds() // 60
+    staff = random.choice(["Mark", "Alice", "John"])
 
     # Update Elevator_Cleanliness_Logs database
     update_query = """
@@ -400,4 +400,12 @@ def confirm_cleaning(alert_id):
 
     logging.info(f"✅ Issue resolved for {station}, Elevator {elevator_num} by {staff} (Duration: {duration} min)")
 
-    return jsonify({"message": "Cleaning marked as completed", "alert_id": alert_id, "station": station, "elevator_num": elevator_num, "duration": duration}), 200
+    return f"""
+    <html>
+    <head><title>Cleaning Confirmed</title></head>
+    <body style="font-family: Arial, sans-serif;">
+        <h2>✅ Cleaning Confirmed</h2>
+        <p>Thank you. The cleaning for <strong>{station}</strong>, Elevator <strong>{elevator_num}</strong> has been recorded.</p>
+    </body>
+    </html>
+    """, 200
