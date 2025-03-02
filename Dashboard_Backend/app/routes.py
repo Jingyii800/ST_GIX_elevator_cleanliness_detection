@@ -370,8 +370,15 @@ def confirm_cleaning(alert_id):
     alert_data = cursor.fetchone()
 
     if not alert_data:
-        logging.warning(f"No unresolved report found for alert ID {alert_id}")
-        return jsonify({"error": f"No unresolved report found for alert ID {alert_id}"}), 404
+        return f"""
+        <html>
+        <head><title>Cleaning Confirmed</title></head>
+        <body style="font-family: Arial, sans-serif;">
+            <h2>✅ Cleaning Confirmed</h2>
+            <p>Thank you. The cleaning for <strong>{station}</strong>, Elevator <strong>{elevator_num}</strong> has been recorded.</p>
+        </body>
+        </html>
+        """, 200
 
     station, elevator_num, reported_time = alert_data
 
