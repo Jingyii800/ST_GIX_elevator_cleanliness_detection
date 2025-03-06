@@ -176,7 +176,7 @@ def confirm_alert(alert_id):
     station, elevator_num = alert_data
 
     # Fixed test email address
-    test_email = "jingyj11@uw.edu"
+    test_email = "jiajj052@outlook.com"
 
     # Generate button link
     confirm_cleaning_url = request.url_root + url_for('main.confirm_cleaning', alert_id=alert_id)

@@ -130,6 +130,7 @@ export const ElevatorStatus = () => {
                 <select className="station-dropdown" value={station} onChange={(e) => setStation(e.target.value)}>
                 <option value="">All</option>
                   <option value="University Of Washington">University of Washington</option>
+                  <option value="Union Station">Union Station</option>
                   <option value="Seattle Central">Seattle Central</option>
                   <option value="Bellevue Station">Bellevue Station</option>
                 </select>
