@@ -160,7 +160,7 @@ export const ElevatorStatus = () => {
                         <tr>
                           <th>Location</th>
                           <th>Humidity Status</th>
-                          <th>Air Quailty Status</th>
+                          <th>Ammonia Status</th>
                           <th>Passenger Report</th>
                           <th>Alert</th>
                         </tr>

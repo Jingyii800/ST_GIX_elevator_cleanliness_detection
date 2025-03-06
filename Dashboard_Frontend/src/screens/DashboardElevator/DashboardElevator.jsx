@@ -365,7 +365,7 @@ export const DashboardElevator = () => {
                     </div>
                 <div className="sensor-info">
                   <p className="sensor-name">Humidity Sensor</p>
-                  <p className="sensor-value">Value : {sensorData.humidity}</p>
+                  <p className="sensor-value">Value : {sensorData.humidity}%</p>
                 </div>   
                 <div className={`sensor-status ${sensorData.humidity_status === "Good" ? "good" : "warning"}`}>
                   {sensorData.humidity_status === "Good" ? (
@@ -391,8 +391,8 @@ export const DashboardElevator = () => {
                       </div>
                     </div>
                 <div className="sensor-info">
-                  <p className="sensor-name">Air Quality Sensor</p>
-                  <p className="sensor-value">Value : {sensorData.air_quality}</p>
+                  <p className="sensor-name">Ammonia Sensor</p>
+                  <p className="sensor-value">Value : {sensorData.air_quality} ppm</p>
                 </div>   
                 <div className={`sensor-status ${sensorData.air_quality_status === "Good" ? "good" : "warning"}`}>
                   {sensorData.air_quality_status === "Good" ? (

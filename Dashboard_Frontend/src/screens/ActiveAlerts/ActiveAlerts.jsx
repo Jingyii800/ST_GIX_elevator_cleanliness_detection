@@ -271,7 +271,7 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
                                 <div className="name-11">Humidity Sensor</div>
 
                                 <div className="date-10">
-                                  Value：{selectedAlert.humidity}
+                                  Value：{selectedAlert.humidity}%
                                 </div>
                               </div>
                             </div>
@@ -315,10 +315,10 @@ export const ActiveAlerts = ({ isOpen, onClose }) => {
 
                               <div className="name-date-7">
                                 <div className="overlap-group-20">
-                                  <div className="name-11">Air Quality Sensor</div>
+                                  <div className="name-11">Ammonia Sensor</div>
 
                                   <p className="date-10">
-                                    Value : {selectedAlert.airQuality}
+                                    Value : {selectedAlert.airQuality}ppm
                                   </p>
                                 </div>
                               </div>
