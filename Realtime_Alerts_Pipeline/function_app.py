@@ -34,43 +34,6 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
         station = data.get("station")
         elevator_num = data.get("elevator_num")
 
-        # if "sensor" not in data:
-        #     # Process NFC event (staff intervention)
-        #     staff = data.get("staff", "Unknown")
-        #     resolved_time = datetime.strptime(data.get("resolved_time"), "%Y-%m-%dT%H:%M:%S")
-
-        #     # Get the most recent unresolved report for this station
-        #     query = """
-        #     SELECT logID, timeStamp 
-        #     FROM Elevator_Cleanliness_Logs 
-        #     WHERE confirmed = 1 AND station = ? AND elevatorNumber = ? AND resolved = 0 
-        #     ORDER BY timeStamp DESC
-        #     """
-        #     cursor.execute(query, station, elevator_num)
-        #     reported_time_row = cursor.fetchone()
-            
-        #     if reported_time_row:
-        #         logID, reported_time = reported_time_row
-        #         duration = (resolved_time - reported_time).total_seconds() // 60  # Convert to minutes
-        #     else:
-        #         logging.warning(f"No unresolved reports found for station {station}")
-        #         return func.HttpResponse(f"No unresolved reports found for station {station}", status_code=404)
-
-        #     # update in SQL Logs database: marked as True, staff: John, Resolved Time:xxx, Duration
-        #     update_query = """
-        #     UPDATE Elevator_Cleanliness_Logs 
-        #     SET resolved = 1, resolvedBy = ?, resolvedTime = ?, duration = ? 
-        #     WHERE logID = ?
-        #     """
-        #     cursor.execute(update_query, staff, resolved_time, duration, logID)
-
-        #     cursor.execute("""
-        #     UPDATE Elevator_Sensor_Status
-        #     SET Alert_Status = 'Normal'
-        #     WHERE Station = ? AND Elevator_Num = ?""", station, elevator_num)
-        #     logging.info(f"✅ Issue resolved for {station}, Elevator {elevator_num} by {staff} (Duration: {duration} min)")
-
-        # else:
         check_alert_query = """
             SELECT COUNT(*) FROM Elevator_Sensor_Status 
             WHERE Station = ? AND Elevator_Num = ? AND Alert_Status = 'Active'
@@ -90,7 +53,7 @@ def eventhub_trigger(azeventhub: func.EventHubEvent):
             # TODO: Optinal :check abnormal_counts based on Machine Learning from database
             
             # 🟢 Define Status Based on Thresholds
-            humidity_status = "Warning" if humidity > 39.0 else "Good"
+            humidity_status = "Warning" if humidity > 32.5 else "Good"
             air_quality_status = "Warning" if air_quality > 150 else "Good"
             passenger_button_status = "Warning" if passenger_button == 1 else "Good"
 

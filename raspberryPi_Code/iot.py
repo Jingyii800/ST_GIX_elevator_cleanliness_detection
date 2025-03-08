@@ -10,6 +10,7 @@ It sends the collected data as JSON messages to Azure IoT Hub.
 """
 
 import os
+import sys
 import time
 import json
 import logging
@@ -20,7 +21,16 @@ import statistics
 import board
 import busio
 import digitalio
-import screen  # Import screen display functions
+import importlib.util
+
+# Define the absolute path to screen.py
+screen_path = "/home/pi/development/e-Paper/screen/python/examples/screen.py"
+
+# Load the screen module dynamically
+spec = importlib.util.spec_from_file_location("screen", screen_path)
+screen = importlib.util.module_from_spec(spec)
+sys.modules["screen"] = screen
+spec.loader.exec_module(screen)
 
 import adafruit_dht
 import adafruit_ads1x15.ads1115 as ADS
@@ -28,6 +38,7 @@ from adafruit_ads1x15.analog_in import AnalogIn
 
 from mfrc522 import SimpleMFRC522  # RFID Reader
 from azure.iot.device import IoTHubDeviceClient, Message
+import atexit
 
 # ==========================================
 # Configuration & Azure IoT Hub Connection
@@ -36,7 +47,7 @@ from azure.iot.device import IoTHubDeviceClient, Message
 IOTHUB_CONNECTION_STRING = "YOUR_IOT_HUB_CONNECTION_STRING"
 
 STATION = "University of Washington"
-ELEVATOR_NUM = 1
+ELEVATOR_NUM = 7
 
 # ==========================================
 # Logging Configuration
@@ -126,6 +137,37 @@ try:
 except Exception as e:
     logger.error("Failed to initialize DHT22 sensor: " + str(e))
     exit(1)
+# Function to read DHT22 sensor with retry logic
+def read_dht_sensor():
+    max_retries = 5  # Number of retries before giving up
+    retries = 0
+    last_valid_humidity = None
+    last_valid_temperature = None
+
+    while retries < max_retries:
+        try:
+            humidity = dht_sensor.humidity
+            temperature = dht_sensor.temperature
+
+            # Check if the values are valid (not None and not 0)
+            if humidity is not None and temperature is not None and humidity > 0:
+                last_valid_humidity = humidity
+                last_valid_temperature = temperature
+                return humidity, temperature
+
+            logger.warning(f"DHT22 read error: Invalid data received. Retry {retries + 1}/{max_retries}")
+            retries += 1
+            time.sleep(2)  # Delay before retrying
+
+        except RuntimeError as e:
+            logger.warning(f"DHT22 read error: {str(e)}. Retry {retries + 1}/{max_retries}")
+            retries += 1
+            time.sleep(2)
+
+    # If retries fail, return last valid readings or default values
+    logger.error("DHT22 sensor failed to read valid data after retries.")
+    return last_valid_humidity if last_valid_humidity else 0, last_valid_temperature if last_valid_temperature else 0
+
 
 # (3) Button on GPIO17
 BUTTON_PIN = 22  # Button GPIO
@@ -138,14 +180,11 @@ button_state = 0
 button_val = 0  # 0: Default screen, 1: Confirm screen, 2: Reported screen
 screen.show_default()  # Start with default display
 
-try:
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(LED_PIN, GPIO.OUT)
-    logger.info("Button initialized on GPIO22.")
-except Exception as e:
-    logger.error("Failed to initialize button: " + str(e))
-    exit(1)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LED_PIN, GPIO.OUT)
+logger.info("Button initialized on GPIO22.")
+
 
 # (4) RFID RC522 module
 try:
@@ -166,7 +205,9 @@ def send_message_to_iothub(payload_dict):
         logger.info("Sent message to Azure IoT Hub: " + message_json)
     except Exception as e:
         logger.error("Error sending message: " + str(e))
-
+def cleanup_gpio():
+    GPIO.cleanup()
+    print("GPIO cleaned up.")
 # ==========================================
 # Main Loop: Read Sensors and Send Data
 # ==========================================
@@ -176,8 +217,7 @@ while True:
     try:
         # --- Read DHT22 Sensor ---
         try:
-            humidity = dht_sensor.humidity
-            temperature_c = dht_sensor.temperature
+            humidity, temperature_c = read_dht_sensor()
         except RuntimeError as e:
             logger.warning("DHT22 read error: " + str(e))
             humidity = None
@@ -193,41 +233,23 @@ while True:
             ammonia_ppm = None
 
         # --- Read Button ---
-        if GPIO.input(BUTTON_PIN) == GPIO.LOW:
-            time.sleep(0.1)  # Debounce
-            if GPIO.input(BUTTON_PIN) == GPIO.LOW:
-                if button_state == 0:
-                    screen.show_confirm()
-                    button_state = 1
-                elif button_state == 1:
-                    screen.show_reported()
-                    button_val = 1
-                    button_state = 2
-                    logger.info("Button Pressed")
-                time.sleep(0.5)
-
-        # Check auto-off LED after 5 seconds
-        if led_on and (time.time() - last_press_time > 5):
-            GPIO.output(LED_PIN, GPIO.LOW)
-            led_on = False
-            logger.info("LED Auto Off")
+        if GPIO.input(BUTTON_PIN) == GPIO.LOW:  # 检测按钮按下
+            if button_state == 0:
+                GPIO.output(LED_PIN, GPIO.HIGH)
+                screen.show_confirm()
+                button_state = 1
+                logging.info("Button pressed: 1" )
+            elif button_state == 1:
+                screen.show_reported()
+                GPIO.output(LED_PIN, GPIO.LOW)
+                button_state = 0
+                button_val = 1
+                time.sleep(2)
+                screen.show_default()
+                logging.info("Button pressed: 2")
 
         # RFID Logic
-        try:
-            rfid_id, staff = rfid_reader.read()
-            resolved_time = datetime.datetime.utcnow().isoformat() + "Z"
-            logger.info(f"RFID Card Detected: ID={rfid_id}, Staff={staff}")
-            
-            # Prepare RFID Payload
-            rfid_payload = {
-                "station": STATION,
-                "elevator_num": ELEVATOR_NUM,
-                "resolved_time": resolved_time,
-                "staff": staff
-            }
-            send_message_to_iothub(rfid_payload)
-        except Exception as e:
-            logger.error("RFID Read Error: " + str(e))
+
 
         # --- Prepare Sensor Data Payload ---
         sensor_payload = {
@@ -243,6 +265,7 @@ while True:
         }
 
         send_message_to_iothub(sensor_payload)
+        button_val = 0  # Reset button after reporting
         time.sleep(5)
 
     except KeyboardInterrupt:
@@ -253,4 +276,5 @@ while True:
         time.sleep(5)
 
 device_client.disconnect()
+atexit.register(cleanup_gpio)
 logger.info("Disconnected from Azure IoT Hub. Bye!")
